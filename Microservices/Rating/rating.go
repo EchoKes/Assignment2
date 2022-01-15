@@ -45,7 +45,7 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 		ratings := DB_retrieveAllRatings()
 		json.NewEncoder(w).Encode(ratings)
 		w.WriteHeader(http.StatusAccepted)
-		w.Write([]byte("202 - All ratings retrieved"))
+		// w.Write([]byte("202 - All ratings retrieved"))
 	}
 	if r.Header.Get("Content-type") == "application/json" {
 		var rating Rating
@@ -80,7 +80,7 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 				// Update tutor's rating for student
 				if DB_updateRating(rating) {
 					w.WriteHeader(http.StatusAccepted)
-					w.Write([]byte("202 - Rating updated"))
+					// w.Write([]byte("202 - Rating updated"))
 				} else {
 					w.WriteHeader(http.StatusBadRequest)
 					w.Write([]byte("400 - Unable to update rating"))
@@ -98,7 +98,7 @@ func ratingsReceived(w http.ResponseWriter, r *http.Request) {
 		ratings := DB_retrieveReceivedRatings(tutorId)
 		json.NewEncoder(w).Encode(ratings)
 		w.WriteHeader(http.StatusAccepted)
-		w.Write([]byte("202 - All received ratings retrieved"))
+		// w.Write([]byte("202 - All received ratings retrieved"))
 	}
 }
 
@@ -110,7 +110,7 @@ func anonRatings(w http.ResponseWriter, r *http.Request) {
 		ratings := DB_retrieveAnonRatings(tutorId)
 		json.NewEncoder(w).Encode(ratings)
 		w.WriteHeader(http.StatusAccepted)
-		w.Write([]byte("202 - All anonymous ratings retrieved"))
+		// w.Write([]byte("202 - All anonymous ratings retrieved"))
 	}
 }
 
@@ -122,7 +122,7 @@ func givenRatings(w http.ResponseWriter, r *http.Request) {
 		ratings := DB_retrieveGivenRatings(tutorId)
 		json.NewEncoder(w).Encode(ratings)
 		w.WriteHeader(http.StatusAccepted)
-		w.Write([]byte("202 - All given ratings retrieved"))
+		// w.Write([]byte("202 - All given ratings retrieved"))
 	}
 }
 
@@ -131,7 +131,7 @@ func allStudents(w http.ResponseWriter, r *http.Request) {
 		studentArray := MS_getAllStudents()
 		json.NewEncoder(w).Encode(studentArray)
 		w.WriteHeader(http.StatusAccepted)
-		w.Write([]byte("202 - Students details received"))
+		// w.Write([]byte("202 - Students details received"))
 	}
 }
 
@@ -147,7 +147,7 @@ func MS_getAllStudents() []Student {
 			data, _ := ioutil.ReadAll(resp.Body)
 			resp.Body.Close()
 			json.Unmarshal(data, &studentArray)
-			fmt.Println("202 - Successfully received students")
+			// fmt.Println("202 - Successfully received students")
 		}
 	} else {
 		fmt.Printf("The HTTP request failed with error %s\n", err)
