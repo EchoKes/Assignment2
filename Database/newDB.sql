@@ -7,17 +7,19 @@ CREATE DATABASE comment_db;
 USE comment_db;
 
 CREATE TABLE Comments
-(
-    id VARCHAR(16) PRIMARY KEY,
-    commentorId VARCHAR(16),
-    commentorType VARCHAR(16),
-    message VARCHAR(255),
-    DatetimePublished DATETIME,
-    Anonymous TINYINT(0) DEFAULT 0
+( 
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    message VARCHAR(100),
+    commentorId VARCHAR(45),
+    commentorType VARCHAR(20),
+    receiverId VARCHAR(45),
+    receiverType VARCHAR(20),
+    datetime DATETIME,
+    anonymous TINYINT(0) DEFAULT 0
 );
 
-INSERT INTO Comments()
-VALUES("4lnc28ivfqvfyrn5", "linhcz2qa1e3g9t3", "szfjg7oovjedz91k", "awesome comment", NOW(), false);
+INSERT INTO Comments(message, commentorId, commentorType, receiverId, receiverType, datetime, anonymous)
+VALUES("This student possess great leadership.", "5fbfxpmjgnkz5d07", "Teacher", "szfjg7oovjedz91k", "Student", NOW(), false);
 
 -- Rating Database Setup
 CREATE DATABASE rating_db;
@@ -26,13 +28,15 @@ USE rating_db;
 
 CREATE TABLE Ratings
 (
-    RatingID VARCHAR(16) PRIMARY KEY,
-    TutorID VARCHAR(16),
-    StudentID VARCHAR(16),
-    RatingScore INT,
-    DatetimePublished DATETIME,
-    Anonymous TINYINT(0) DEFAULT 0
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    rating TINYINT(1),
+    raterId VARCHAR(45),
+    raterType VARCHAR(20),
+    receiverId VARCHAR(45),
+    receiverType VARCHAR(20),
+    datetime DATETIME,
+    anonymous TINYINT(0) DEFAULT 0
 );
 
-INSERT INTO Ratings()
-VALUES("6e5j8i6z5ve7v1up", "jidn8t3qh2bi91fp", "u1e7fh3h35085v9l", 4, NOW(), false);
+INSERT INTO Ratings(rating, raterId, raterType, receiverId, receiverType, datetime, anonymous)
+VALUES(4, "u1e7fh3h35085v9l", "Student", "4lnc28ivfqvfyrn5", "Teacher", NOW(), false);
