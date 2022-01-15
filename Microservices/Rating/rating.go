@@ -20,12 +20,19 @@ type Rating struct {
 	RaterId           string `json:"raterId"`
 	RaterType         string `json:"raterType"`
 	ReceiverId        string `json:"receiverId"`
-	ReceiverType      string `json:receiverType`
+	ReceiverType      string `json:"receiverType"`
 	PublishedDatetime string `json:"datetime"`
 	Anonymous         bool   `json:"anonymous"`
 }
 
+type Student struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 var db *sql.DB
+
+const student_url = "http://localhost:8183/api/v1/students"
 
 func landing(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "~ Ratings & Comments Dashboard ~")
@@ -86,7 +93,9 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 // Get all ratings received
 func ratingsReceived(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		ratings := DB_retrieveAllRatings()
+		params := mux.Vars(r)
+		tutorId := params["tutorid"]
+		ratings := DB_retrieveReceivedRatings(tutorId)
 		json.NewEncoder(w).Encode(ratings)
 		w.WriteHeader(http.StatusAccepted)
 		w.Write([]byte("202 - All received ratings retrieved"))
@@ -96,7 +105,9 @@ func ratingsReceived(w http.ResponseWriter, r *http.Request) {
 // Get all anonymized ratings
 func anonRatings(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		ratings := DB_retrieveAllRatings()
+		params := mux.Vars(r)
+		tutorId := params["tutorid"]
+		ratings := DB_retrieveAnonRatings(tutorId)
 		json.NewEncoder(w).Encode(ratings)
 		w.WriteHeader(http.StatusAccepted)
 		w.Write([]byte("202 - All anonymous ratings retrieved"))
@@ -106,11 +117,42 @@ func anonRatings(w http.ResponseWriter, r *http.Request) {
 // View all given ratings
 func givenRatings(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		ratings := DB_retrieveAllRatings()
+		params := mux.Vars(r)
+		tutorId := params["tutorid"]
+		ratings := DB_retrieveGivenRatings(tutorId)
 		json.NewEncoder(w).Encode(ratings)
 		w.WriteHeader(http.StatusAccepted)
 		w.Write([]byte("202 - All given ratings retrieved"))
 	}
+}
+
+func allStudents(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		studentArray := MS_getAllStudents()
+		json.NewEncoder(w).Encode(studentArray)
+		w.WriteHeader(http.StatusAccepted)
+		w.Write([]byte("202 - Students details received"))
+	}
+}
+
+// Retrieve all student details from student microservice
+func MS_getAllStudents() []Student {
+	resp, err := http.Get(student_url)
+	var studentArray []Student
+
+	if err == nil {
+		if resp.StatusCode == http.StatusNotFound {
+			fmt.Println("409 - No Students Found")
+		} else {
+			data, _ := ioutil.ReadAll(resp.Body)
+			resp.Body.Close()
+			json.Unmarshal(data, &studentArray)
+			fmt.Println("202 - Successfully received students")
+		}
+	} else {
+		fmt.Printf("The HTTP request failed with error %s\n", err)
+	}
+	return studentArray
 }
 
 // DB function for retrieving all ratings of student
@@ -162,7 +204,7 @@ func DB_retrieveSingleRating(rating Rating) int {
 func DB_insertRating(rating Rating) bool {
 	query := fmt.Sprintf(
 		`INSERT INTO Ratings(rating, raterId, raterType, receiverId, receiverType, datetime, anonymous)
-		 VALUES('%d', '%s', 'Teacher', '%s', 'Student', NOW(), %t);`,
+		 VALUES('%d', '%s', 'Tutor', '%s', 'Student', NOW(), %t);`,
 		rating.Rating, rating.RaterId, rating.ReceiverId, rating.Anonymous)
 	res, err := db.Exec(query)
 
@@ -261,10 +303,11 @@ func main() {
 
 	// setup routers
 	router.HandleFunc("/api/v1", landing)
-	router.HandleFunc("/api/v1/ratings/all", allRatings).Methods("GET", "POST", "PUT")
-	router.HandleFunc("/api/v1/ratings/received", ratingsReceived).Methods("GET")
-	router.HandleFunc("/api/v1/ratings/anon", anonRatings).Methods("GET")
-	router.HandleFunc("/api/v1/ratings/given", givenRatings).Methods("GET")
+	router.HandleFunc("/api/v1/ratings", allRatings).Methods("GET", "POST", "PUT")
+	router.HandleFunc("/api/v1/{tutorid}/ratings/received", ratingsReceived).Methods("GET")
+	router.HandleFunc("/api/v1/{tutorid}/ratings/anon", anonRatings).Methods("GET")
+	router.HandleFunc("/api/v1/{tutorid}/ratings/given", givenRatings).Methods("GET")
+	router.HandleFunc("/api/v1/students", allStudents).Methods("GET")
 
 	// establish db connection
 	var err error
