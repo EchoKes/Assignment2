@@ -67,6 +67,7 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 				w.Write([]byte("409 - Rating already made! Try PUT method instead."))
 			}
 		}
+		// {Part 3: Update rating on a student}
 		if r.Method == "PUT" {
 			if ratingScore != -1 {
 				// Update tutor's rating for student
@@ -84,22 +85,36 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 
 // Get all ratings received
 func ratingsReceived(w http.ResponseWriter, r *http.Request) {
-	//var ratings []Rating
-
+	if r.Method == "GET" {
+		ratings := DB_retrieveAllRatings()
+		json.NewEncoder(w).Encode(ratings)
+		w.WriteHeader(http.StatusAccepted)
+		w.Write([]byte("202 - All received ratings retrieved"))
+	}
 }
 
 // Get all anonymized ratings
 func anonRatings(w http.ResponseWriter, r *http.Request) {
-	//var ratings []Rating
-
+	if r.Method == "GET" {
+		ratings := DB_retrieveAllRatings()
+		json.NewEncoder(w).Encode(ratings)
+		w.WriteHeader(http.StatusAccepted)
+		w.Write([]byte("202 - All anonymous ratings retrieved"))
+	}
 }
 
 // View all given ratings
 func givenRatings(w http.ResponseWriter, r *http.Request) {
-
+	if r.Method == "GET" {
+		ratings := DB_retrieveAllRatings()
+		json.NewEncoder(w).Encode(ratings)
+		w.WriteHeader(http.StatusAccepted)
+		w.Write([]byte("202 - All given ratings retrieved"))
+	}
 }
 
 // DB function for retrieving all ratings of student
+// returns an array of type Rating of all ratings
 func DB_retrieveAllRatings() []Rating {
 	var ratingArray []Rating
 
@@ -173,6 +188,71 @@ func DB_updateRating(rating Rating) bool {
 
 	rows, _ := res.RowsAffected()
 	return rows == 1
+}
+
+// DB function for retrieving all received ratings of tutor
+// returns an array of type Rating of all received ratings
+func DB_retrieveReceivedRatings(tutorId string) []Rating {
+	var ratingArray []Rating
+
+	query := fmt.Sprintln(`SELECT * FROM Ratings WHERE receiverId = '%s';`, tutorId)
+	res, err := db.Query(query)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for res.Next() {
+		var r Rating
+		res.Scan(&r.Id, &r.Rating, &r.RaterId, &r.RaterType, &r.ReceiverId, &r.ReceiverType, &r.PublishedDatetime, &r.Anonymous)
+		ratingArray = append(ratingArray, r)
+	}
+
+	return ratingArray
+}
+
+// DB function for retrieving all anonymous ratings of tutor
+// returns an array of type Rating of all anonymous ratings
+func DB_retrieveAnonRatings(tutorId string) []Rating {
+	var ratingArray []Rating
+
+	query := fmt.Sprintf(
+		`SELECT * FROM Ratings WHERE receiverId = '%s' AND anonymous = true;`, tutorId)
+	res, err := db.Query(query)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for res.Next() {
+		var r Rating
+		res.Scan(&r.Id, &r.Rating, &r.RaterId, &r.RaterType, &r.ReceiverId, &r.ReceiverType, &r.PublishedDatetime, &r.Anonymous)
+		ratingArray = append(ratingArray, r)
+	}
+
+	return ratingArray
+}
+
+// DB function for retrieving all of tutor's given ratings
+// returns an array of type Rating of all tutor's given ratings
+func DB_retrieveGivenRatings(tutorId string) []Rating {
+	var ratingArray []Rating
+
+	query := fmt.Sprintf(
+		`SELECT * FROM Ratings WHERE raterId = '%s';`, tutorId)
+	res, err := db.Query(query)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for res.Next() {
+		var r Rating
+		res.Scan(&r.Id, &r.Rating, &r.RaterId, &r.RaterType, &r.ReceiverId, &r.ReceiverType, &r.PublishedDatetime, &r.Anonymous)
+		ratingArray = append(ratingArray, r)
+	}
+
+	return ratingArray
 }
 
 func main() {
