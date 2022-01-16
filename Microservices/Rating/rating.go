@@ -40,9 +40,11 @@ func landing(w http.ResponseWriter, r *http.Request) {
 
 // Retrieve all ratings, Post a rating on student, Update a rating given to a student
 func allRatings(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	studentId := params["studentid"]
 	// {Part 1: Retrieve all ratings}
 	if r.Method == "GET" {
-		ratings := DB_retrieveAllRatings()
+		ratings := DB_retrieveAllRatings(studentId)
 		json.NewEncoder(w).Encode(ratings)
 		w.WriteHeader(http.StatusAccepted)
 		// w.Write([]byte("202 - All ratings retrieved"))
@@ -157,10 +159,12 @@ func MS_getAllStudents() []Student {
 
 // DB function for retrieving all ratings of student
 // returns an array of type Rating of all ratings
-func DB_retrieveAllRatings() []Rating {
+func DB_retrieveAllRatings(receiverId string) []Rating {
 	var ratingArray []Rating
 
-	query := "SELECT * FROM Ratings WHERE receiverType = 'Student';"
+	query := fmt.Sprintf(`
+	SELECT * FROM Ratings WHERE receiverId = '%s'
+	ORDER BY datetime desc;`, receiverId)
 	res, err := db.Query(query)
 
 	if err != nil {
@@ -303,7 +307,7 @@ func main() {
 
 	// setup routers
 	router.HandleFunc("/api/v1", landing)
-	router.HandleFunc("/api/v1/ratings", allRatings).Methods("GET", "POST", "PUT")
+	router.HandleFunc("/api/v1/ratings/{studentid}", allRatings).Methods("GET", "POST", "PUT")
 	router.HandleFunc("/api/v1/{tutorid}/ratings/received", ratingsReceived).Methods("GET")
 	router.HandleFunc("/api/v1/{tutorid}/ratings/anon", anonRatings).Methods("GET")
 	router.HandleFunc("/api/v1/{tutorid}/ratings/given", givenRatings).Methods("GET")
