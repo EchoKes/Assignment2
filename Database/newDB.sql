@@ -80,7 +80,7 @@ USE student_db;
 
 CREATE TABLE Students
 (
-    id VARCHAR(45),
+    id VARCHAR(45) PRIMARY KEY,
     name VARCHAR(255)
 );
 
@@ -103,7 +103,7 @@ USE tutor_db;
 
 CREATE TABLE Tutors
 (
-    id VARCHAR(45),
+    id VARCHAR(45) PRIMARY KEY,
     name VARCHAR(255)
 );
 

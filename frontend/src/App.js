@@ -1,25 +1,22 @@
-import './App.css';
-import React, { useState } from 'react';
-import axios from 'axios';
-
-const baseURL = 'http://localhost:8181/api/v1';
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Dashboard from "./Dashboard";
+import StudentDetails from "./StudentDetails";
+import ErrorPage from "./ErrorPage";
 
 function App() {
-  const getRatings = () => {
-    axios.get(baseURL + '/ratings')
-    .then(res => {
-      console.log(res.data)
-    }).catch(err => {
-      console.log(err)
-    })
-  }  
   return (
-    <>
-      <div>
-        <h1>test axios api</h1>
-        <button onClick={getRatings}>Get Ratings</button>
-      </div>
-    </>
+    <Router>
+      {/* <nav>
+        <Link to="dashboard">Dashboard</Link>
+        <Link to="personal">Personal</Link>
+      </nav> */}
+      <Routes>
+        <Route path="/" />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/:studentid" element={<StudentDetails />} />
+        <Route path="*" element={<ErrorPage />} />
+      </Routes>
+    </Router>
   );
 }
 
