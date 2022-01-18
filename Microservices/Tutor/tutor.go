@@ -14,7 +14,7 @@ import (
 )
 
 type Tutor struct {
-	Id   int    `json:"id"`
+	Id   string `json:"id"`
 	Name string `json:"name"`
 }
 

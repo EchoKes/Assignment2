@@ -1,60 +1,74 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { CardActionArea } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import FaceIcon from "@mui/icons-material/Face";
+import ReactStars from "react-stars";
 
 const useStyles = makeStyles({
-  root: {
+  ratingWidth: {
     width: 300,
     minWidth: 300,
   },
+  commentWidth: {
+    width: 350,
+    minWidth: 350,
+  },
+  star: {
+    fontSize: "32px",
+  },
 });
 
-function ActionAreaCard({ id, name }) {
+const RatingCard = ({ rating }) => {
   const classes = useStyles();
-  let navigate = useNavigate();
 
   return (
     <Card
-      className={classes.root}
-      sx={{ borderRadius: "10px", border: 1.5, borderColor: "grey.500" }}
+      className={classes.ratingWidth}
+      sx={{ borderRadius: "10px", border: 1.5, borderColor: "#999999" }}
+      variant="outlined"
     >
-      <CardActionArea
-        onClick={() => {
-          navigate(`/dashboard/${id}`);
-        }}
-      >
-        <CardContent>
-          <div>
-            <FaceIcon
-              sx={{
-                height: 80,
-                width: 80,
-                display: "inline",
-              }}
-            />
-            <Typography
-              variant="h4"
-              component="div"
-              noWrap
-              sx={{
-                paddingLeft: 2,
-                position: "absolute",
-                top: 40,
-                display: "inline",
-              }}
-            >
-              {name}
-            </Typography>
-          </div>
-        </CardContent>
-      </CardActionArea>
+      <CardContent>
+        <Typography sx={{ fontSize: 18 }} color="text.primary" gutterBottom>
+          {rating.raterName} ({rating.raterType})
+        </Typography>
+        <Typography variant="h6" component="div">
+          {/* {rating.rating} */}
+          <ReactStars
+            edit={false}
+            value={rating.rating}
+            count={5}
+            size={32}
+            color1={"#C7C7C7"}
+            color2={"#FDCC0D"}
+          />
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Rated {rating.rating} stars on {rating.datetime}
+        </Typography>
+      </CardContent>
     </Card>
   );
-}
+};
 
-export default ActionAreaCard;
+const CommentCard = (comment) => {
+  const classes = useStyles();
+
+  return (
+    <Card className={classes.commentWidth} variant="outlined">
+      <CardContent>
+        <Typography sx={{ fontSize: 14 }} color="text.primary" gutterBottom>
+          {comment.commentorName}
+        </Typography>
+        <Typography variant="h5" component="div">
+          {comment.comment}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Commented on {comment.datetime}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+};
+
+export { RatingCard, CommentCard };

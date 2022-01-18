@@ -18,14 +18,16 @@ type Rating struct {
 	Id                int    `json:"id"`
 	Rating            int    `json:"rating"`
 	RaterId           string `json:"raterId"`
+	RaterName         string `json:"raterName"`
 	RaterType         string `json:"raterType"`
 	ReceiverId        string `json:"receiverId"`
+	ReceiverName      string `json:"receiverName"`
 	ReceiverType      string `json:"receiverType"`
 	PublishedDatetime string `json:"datetime"`
 	Anonymous         bool   `json:"anonymous"`
 }
 
-type Student struct {
+type Person struct {
 	Id   string `json:"id"`
 	Name string `json:"name"`
 }
@@ -33,6 +35,7 @@ type Student struct {
 var db *sql.DB
 
 const student_url = "http://localhost:8183/api/v1/students"
+const tutor_url = "http://localhost:8184/api/v1/tutors"
 
 func landing(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "~ Ratings & Comments Dashboard ~")
@@ -130,31 +133,51 @@ func givenRatings(w http.ResponseWriter, r *http.Request) {
 
 func allStudents(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		studentArray := MS_getAllStudents()
+		studentArray := MS_getAllPersons(student_url)
 		json.NewEncoder(w).Encode(studentArray)
 		w.WriteHeader(http.StatusAccepted)
 		// w.Write([]byte("202 - Students details received"))
 	}
 }
 
-// Retrieve all student details from student microservice
-func MS_getAllStudents() []Student {
-	resp, err := http.Get(student_url)
-	var studentArray []Student
+func allTutors(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		tutorArray := MS_getAllPersons(tutor_url)
+		json.NewEncoder(w).Encode(tutorArray)
+		w.WriteHeader(http.StatusAccepted)
+		// w.Write([]byte("202 - Tutor details received"))
+	}
+}
+
+// Retrieve all tutor details from tutor microservice
+func MS_getAllPersons(personUrl string) []Person {
+	resp, err := http.Get(personUrl)
+	var tutorArray []Person
 
 	if err == nil {
 		if resp.StatusCode == http.StatusNotFound {
-			fmt.Println("409 - No Students Found")
+			fmt.Println("409 - No One Found")
 		} else {
 			data, _ := ioutil.ReadAll(resp.Body)
 			resp.Body.Close()
-			json.Unmarshal(data, &studentArray)
-			// fmt.Println("202 - Successfully received students")
+			json.Unmarshal(data, &tutorArray)
+			// fmt.Println("202 - Successfully received people details")
 		}
 	} else {
 		fmt.Printf("The HTTP request failed with error %s\n", err)
 	}
-	return studentArray
+	return tutorArray
+}
+
+// Helper function for retrieving name from student/tutor array
+func Helper_retrieveName(id string, personArray []Person) string {
+	name := "undefined"
+	for _, person := range personArray {
+		if person.Id == id {
+			name = person.Name
+		}
+	}
+	return name
 }
 
 // DB function for retrieving all ratings of student
@@ -171,9 +194,35 @@ func DB_retrieveAllRatings(receiverId string) []Rating {
 		panic(err.Error())
 	}
 
+	studentArray := MS_getAllPersons(student_url)
+	tutorArray := MS_getAllPersons(tutor_url)
+
 	for res.Next() {
 		var r Rating
+		var personArray []Person
 		res.Scan(&r.Id, &r.Rating, &r.RaterId, &r.RaterType, &r.ReceiverId, &r.ReceiverType, &r.PublishedDatetime, &r.Anonymous)
+
+		switch r.ReceiverType {
+		case "Student":
+			personArray = studentArray
+		case "Tutor":
+			personArray = tutorArray
+		}
+		receiverName := Helper_retrieveName(r.ReceiverId, personArray)
+		r.ReceiverName = receiverName
+
+		if r.Anonymous {
+			r.RaterName = "Anonymous"
+		} else {
+			switch r.RaterType {
+			case "Student":
+				personArray = studentArray
+			case "Tutor":
+				personArray = tutorArray
+			}
+			raterName := Helper_retrieveName(r.RaterId, personArray)
+			r.RaterName = raterName
+		}
 		ratingArray = append(ratingArray, r)
 	}
 
@@ -312,6 +361,7 @@ func main() {
 	router.HandleFunc("/api/v1/{tutorid}/ratings/anon", anonRatings).Methods("GET")
 	router.HandleFunc("/api/v1/{tutorid}/ratings/given", givenRatings).Methods("GET")
 	router.HandleFunc("/api/v1/students", allStudents).Methods("GET")
+	router.HandleFunc("/api/v1/tutors", allTutors).Methods("GET")
 
 	// establish db connection
 	var err error

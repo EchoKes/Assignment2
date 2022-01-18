@@ -9,7 +9,7 @@ USE comment_db;
 CREATE TABLE Comments
 ( 
     id INT AUTO_INCREMENT PRIMARY KEY,
-    message VARCHAR(100),
+    comment VARCHAR(100),
     commentorId VARCHAR(45),
     commentorType VARCHAR(20),
     receiverId VARCHAR(45),
@@ -18,7 +18,7 @@ CREATE TABLE Comments
     anonymous TINYINT(0) DEFAULT 0
 );
 
-INSERT INTO Comments(message, commentorId, commentorType, receiverId, receiverType, datetime, anonymous) 
+INSERT INTO Comments(comment, commentorId, commentorType, receiverId, receiverType, datetime, anonymous) 
 VALUES
 ("Great at working in teams.", "fwna55ir8hqo57xl", "Student", "zv04w3y2tlcn5hj1", "Student", NOW(), false),
 ("Great team player.", "9e8uqiz7xat21opf", "Student", "zv04w3y2tlcn5hj1", "Student", NOW(), false),

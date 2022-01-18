@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import ActionAreaCard from "./StudentCard";
+import CardDetails from "./CardDetails";
 import { Grid, Container } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
@@ -35,10 +35,7 @@ export default function Dashboard() {
         {studentArray.map((student) => {
           return (
             <Grid key={student.id} item xs={12} sm={6} md={4} zeroMinWidth>
-              <ActionAreaCard
-                id={student.id}
-                name={student.name}
-              ></ActionAreaCard>
+              <CardDetails id={student.id} name={student.name}></CardDetails>
             </Grid>
           );
         })}
