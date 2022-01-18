@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import CardDetails from "./CardDetails";
+import StudentCard from "../components/StudentCardComponent";
 import { Grid, Container } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
@@ -14,7 +14,7 @@ const client = axios.create({
   baseURL: "http://localhost:8181/api/v1",
 });
 
-export default function Dashboard() {
+const Dashboard = () => {
   // reference style
   const classes = useStyles();
   // create states
@@ -35,11 +35,13 @@ export default function Dashboard() {
         {studentArray.map((student) => {
           return (
             <Grid key={student.id} item xs={12} sm={6} md={4} zeroMinWidth>
-              <CardDetails id={student.id} name={student.name}></CardDetails>
+              <StudentCard id={student.id} name={student.name}></StudentCard>
             </Grid>
           );
         })}
       </Grid>
     </Container>
   );
-}
+};
+
+export default Dashboard;

@@ -51,6 +51,10 @@ const RatingCard = ({ rating }) => {
   );
 };
 
+const RatingCardEditable = () => {
+  return <p>placeholder</p>;
+};
+
 const CommentCard = (comment) => {
   const classes = useStyles();
 
@@ -71,4 +75,4 @@ const CommentCard = (comment) => {
   );
 };
 
-export { RatingCard, CommentCard };
+export { RatingCard, RatingCardEditable };

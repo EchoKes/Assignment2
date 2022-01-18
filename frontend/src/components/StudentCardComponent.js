@@ -14,7 +14,7 @@ const useStyles = makeStyles({
   },
 });
 
-function CardDetails({ id, name }) {
+const StudentCard = ({ id, name }) => {
   const classes = useStyles();
   let navigate = useNavigate();
 
@@ -55,6 +55,6 @@ function CardDetails({ id, name }) {
       </CardActionArea>
     </Card>
   );
-}
+};
 
-export default CardDetails;
+export default StudentCard;

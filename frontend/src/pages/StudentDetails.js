@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { RatingCard } from "./StudentCard";
+import { RatingCard } from "../components/RatingCardComponent";
 
 const client = axios.create({
   baseURL: `http://localhost:8181/api/v1/ratings`,
