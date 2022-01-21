@@ -26,7 +26,7 @@ const useStyles = makeStyles({
 });
 
 const client = axios.create({
-  baseURL: `http://localhost:8181/api/v1/ratings`,
+  baseURL: `http://localhost:8181/ratings`,
 });
 
 var defaultRating = -1;

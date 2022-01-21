@@ -57,8 +57,8 @@ func main() {
 	router := mux.NewRouter()
 
 	// setup routers
-	router.HandleFunc("/api/v1", landing)
-	router.HandleFunc("/api/v1/tutors", allTutors).Methods("GET")
+	router.HandleFunc("/landing", landing)
+	router.HandleFunc("/tutors", allTutors).Methods("GET")
 
 	// establish db connection
 	var err error

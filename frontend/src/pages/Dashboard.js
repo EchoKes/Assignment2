@@ -11,7 +11,7 @@ const useStyles = makeStyles({
 });
 
 const client = axios.create({
-  baseURL: "http://localhost:8181/api/v1",
+  baseURL: "http://localhost:8181",
 });
 
 const Dashboard = () => {

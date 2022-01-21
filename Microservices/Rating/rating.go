@@ -34,8 +34,8 @@ type Person struct {
 
 var db *sql.DB
 
-const student_url = "http://localhost:8183/api/v1/students"
-const tutor_url = "http://localhost:8184/api/v1/tutors"
+const student_url = "http://localhost:8183/students"
+const tutor_url = "http://localhost:8184/tutors"
 
 func landing(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "~ Ratings & Comments Dashboard ~")
@@ -394,14 +394,14 @@ func main() {
 	router := mux.NewRouter()
 
 	// setup routers
-	router.HandleFunc("/api/v1", landing)
-	router.HandleFunc("/api/v1/ratings/{studentid}", allRatings).Methods("GET", "POST", "PUT")
-	router.HandleFunc("/api/v1/{tutorid}/ratings/received", ratingsReceived).Methods("GET")
-	router.HandleFunc("/api/v1/{tutorid}/ratings/anon", anonRatings).Methods("GET")
-	router.HandleFunc("/api/v1/{tutorid}/ratings/given", givenRatings).Methods("GET")
-	router.HandleFunc("/api/v1/students", allStudents).Methods("GET")
-	router.HandleFunc("/api/v1/tutors", allTutors).Methods("GET")
-	router.HandleFunc("/api/v1/ratings/{studentid}/{tutorid}", ratingFromTutor).Methods("GET")
+	router.HandleFunc("/landing", landing)
+	router.HandleFunc("/ratings/{studentid}", allRatings).Methods("GET", "POST", "PUT")
+	router.HandleFunc("/{tutorid}/ratings/received", ratingsReceived).Methods("GET")
+	router.HandleFunc("/{tutorid}/ratings/anon", anonRatings).Methods("GET")
+	router.HandleFunc("/{tutorid}/ratings/given", givenRatings).Methods("GET")
+	router.HandleFunc("/students", allStudents).Methods("GET")
+	router.HandleFunc("/tutors", allTutors).Methods("GET")
+	router.HandleFunc("/ratings/{studentid}/{tutorid}", ratingFromTutor).Methods("GET")
 
 	// establish db connection
 	var err error
