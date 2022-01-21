@@ -15,6 +15,8 @@ const client = axios.create({
 });
 
 const Dashboard = () => {
+  // EXPERIMENTAL
+  localStorage.setItem("tutorid", "g8m1ce47c43blq0n");
   // reference style
   const classes = useStyles();
   // create states

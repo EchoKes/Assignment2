@@ -65,7 +65,8 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 
 		// {Part 2: Rate a student}
 		if r.Method == "POST" {
-			if ratingScore == -1 {
+			// TODO: remove if condition
+			if ratingScore < 0 {
 				// Create tutor's rating for student
 				if DB_insertRating(rating) {
 					w.WriteHeader(http.StatusCreated)
@@ -81,16 +82,15 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 		}
 		// {Part 3: Update rating on a student}
 		if r.Method == "PUT" {
-			if ratingScore != -1 {
-				// Update tutor's rating for student
-				if DB_updateRating(rating) {
-					w.WriteHeader(http.StatusAccepted)
-					// w.Write([]byte("202 - Rating updated"))
-				} else {
-					w.WriteHeader(http.StatusBadRequest)
-					w.Write([]byte("400 - Unable to update rating"))
-				}
+			// Update tutor's rating for student
+			if DB_updateRating(rating) {
+				w.WriteHeader(http.StatusAccepted)
+				w.Write([]byte("202 - Rating updated"))
+			} else {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte("400 - Unable to update rating"))
 			}
+
 		}
 	}
 }
@@ -144,6 +144,18 @@ func allTutors(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		tutorArray := MS_getAllPersons(tutor_url)
 		json.NewEncoder(w).Encode(tutorArray)
+		w.WriteHeader(http.StatusAccepted)
+		// w.Write([]byte("202 - Tutor details received"))
+	}
+}
+
+func ratingFromTutor(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		params := mux.Vars(r)
+		tutorId := params["tutorid"]
+		studentId := params["studentid"]
+		ratingDetails := DB_retrieveRatingFromTutor(tutorId, studentId)
+		json.NewEncoder(w).Encode(ratingDetails)
 		w.WriteHeader(http.StatusAccepted)
 		// w.Write([]byte("202 - Tutor details received"))
 	}
@@ -273,8 +285,8 @@ func DB_insertRating(rating Rating) bool {
 // returns true if update is successful
 func DB_updateRating(rating Rating) bool {
 	query := fmt.Sprintf(
-		`UPDATE Ratings SET rating = '%d', datetime = NOW() WHERE raterId = '%s' AND receiverId = '%s';`,
-		rating.Rating, rating.RaterId, rating.ReceiverId)
+		`UPDATE Ratings SET rating = '%d', datetime = NOW(), anonymous = %t WHERE raterId = '%s' AND receiverId = '%s';`,
+		rating.Rating, rating.Anonymous, rating.RaterId, rating.ReceiverId)
 	res, err := db.Exec(query)
 
 	if err != nil {
@@ -350,6 +362,33 @@ func DB_retrieveGivenRatings(tutorId string) []Rating {
 	return ratingArray
 }
 
+// DB function for retrieving rating given to a student by certain tutor
+func DB_retrieveRatingFromTutor(tutorId string, studentId string) Rating {
+	var r Rating
+	r.Rating = -1
+	tutorArray := MS_getAllPersons(tutor_url)
+	studentArray := MS_getAllPersons(student_url)
+	r.RaterId = tutorId
+	r.RaterName = Helper_retrieveName(tutorId, tutorArray)
+	r.ReceiverId = studentId
+	r.ReceiverName = Helper_retrieveName(studentId, studentArray)
+
+	query := fmt.Sprintf(
+		`SELECT * FROM Ratings WHERE raterId = '%s' 
+		AND receiverId = '%s'`, tutorId, studentId)
+	res, err := db.Query(query)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if res.Next() {
+		res.Scan(&r.Id, &r.Rating, &r.RaterId, &r.RaterType, &r.ReceiverId, &r.ReceiverType, &r.PublishedDatetime, &r.Anonymous)
+	}
+
+	return r
+}
+
 func main() {
 	//start router
 	router := mux.NewRouter()
@@ -362,6 +401,7 @@ func main() {
 	router.HandleFunc("/api/v1/{tutorid}/ratings/given", givenRatings).Methods("GET")
 	router.HandleFunc("/api/v1/students", allStudents).Methods("GET")
 	router.HandleFunc("/api/v1/tutors", allTutors).Methods("GET")
+	router.HandleFunc("/api/v1/ratings/{studentid}/{tutorid}", ratingFromTutor).Methods("GET")
 
 	// establish db connection
 	var err error
