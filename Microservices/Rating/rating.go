@@ -390,7 +390,7 @@ func DB_retrieveRatingFromTutor(tutorId string, studentId string) Rating {
 }
 
 func main() {
-	//start router
+	// start router
 	router := mux.NewRouter()
 
 	// setup routers
