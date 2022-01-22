@@ -81,7 +81,11 @@ const StudentDetails = () => {
         <StudentRating studentid={studentid} tutorid={tutorid} />
       )}
       {tabValue === 1 && (
-        <StudentComment studentid={studentid} tutorid={tutorid} />
+        <StudentComment
+          receivername={ratingFromTutor.receiverName}
+          studentid={studentid}
+          tutorid={tutorid}
+        />
       )}
     </>
   );
@@ -91,25 +95,26 @@ const StudentDetails = () => {
 const StudentRating = ({ studentid, tutorid }) => {
   const classes = useStyles();
 
-  const [ratingsArray, setRatingsArray] = useState(() => {
-    return null;
-  });
-  const [ratingFromTutor, setRatingFromTutor] = useState(() => {
-    return "";
-  }); // api student's rating from tutor
-
-  React.useEffect(() => {
+  const [ratingsArray, setRatingsArray] = useState([]);
+  const retrieveRating = () => {
     clientRating.get(`/${studentid}`).then((res) => {
       console.log(res.data);
       setRatingsArray(res.data);
     });
+  };
+  React.useEffect(() => {
+    retrieveRating();
   }, []);
 
-  React.useEffect(() => {
+  const [ratingFromTutor, setRatingFromTutor] = useState(""); // api student's rating from tutor
+  const retrieveRatingFromTutor = () => {
     clientRating.get(`/${studentid}/${tutorid}`).then((res) => {
       console.log("rating from tutor retrieved.");
       setRatingFromTutor(res.data);
     });
+  };
+  React.useEffect(() => {
+    retrieveRatingFromTutor();
   }, []);
 
   if (!ratingsArray) {
@@ -117,7 +122,10 @@ const StudentRating = ({ studentid, tutorid }) => {
       <Container className={classes.container}>
         <p className={classes.center}>No ratings given yet :C</p>
         <Grid container className={classes.center}>
-          <RatingCardEditable rating={ratingFromTutor} />
+          <RatingCardEditable
+            updateRating={retrieveRating}
+            rating={ratingFromTutor}
+          />
         </Grid>
       </Container>
     );
@@ -132,7 +140,10 @@ const StudentRating = ({ studentid, tutorid }) => {
           );
         })}
         <Grid className={classes.center}>
-          <RatingCardEditable rating={ratingFromTutor} />
+          <RatingCardEditable
+            updateRating={retrieveRating}
+            rating={ratingFromTutor}
+          />
         </Grid>
       </Container>
     );
@@ -140,36 +151,43 @@ const StudentRating = ({ studentid, tutorid }) => {
 };
 
 // function for getting comment of student from api
-const StudentComment = ({ studentid, tutorid }) => {
+const StudentComment = ({ receivername, studentid, tutorid }) => {
   const classes = useStyles();
 
-  const [commentsArray, setCommentsArray] = useState(() => {
-    return null;
-  });
-  const [commentFromTutor, setCommentFromTutor] = useState(() => {
-    return "";
-  });
-
-  React.useEffect(() => {
+  const [commentsArray, setCommentsArray] = useState([]);
+  // api call to retrieve all comments of a student
+  const retrieveComments = () => {
     clientComment.get(`/${studentid}`).then((res) => {
       console.log(res.data);
       setCommentsArray(res.data);
     });
+  };
+  React.useEffect(() => {
+    retrieveComments();
   }, []);
 
-  React.useEffect(() => {
-    clientComment.get(`/${studentid}/${tutorid}`).then((res) => {
-      console.log("comment from tutor retrieved.");
-      setCommentFromTutor(res.data);
-    });
-  }, []);
+  // const [commentFromTutor, setCommentFromTutor] = useState([]);
+  // const retrieveCommentFromTutor = () => {
+  //   clientComment.get(`/${studentid}/${tutorid}`).then((res) => {
+  //     console.log("comment from tutor retrieved.");
+  //     setCommentFromTutor(res.data);
+  //   });
+  // };
+  // React.useEffect(() => {
+  //   retrieveCommentFromTutor();
+  // }, []);
 
   if (!commentsArray) {
     return (
       <Container className={classes.container}>
         <p className={classes.center}>No comments given yet :C</p>
         <Grid container className={classes.center}>
-          <CommentCardEditable comment={commentFromTutor} />
+          <CommentCardEditable
+            receivername={receivername}
+            updateComments={retrieveComments}
+            tutorid={tutorid}
+            studentid={studentid}
+          />
         </Grid>
       </Container>
     );
@@ -184,7 +202,12 @@ const StudentComment = ({ studentid, tutorid }) => {
           );
         })}
         <Grid className={classes.center}>
-          <CommentCardEditable comment={commentFromTutor} />
+          <CommentCardEditable
+            receivername={receivername}
+            updateComments={retrieveComments}
+            tutorid={tutorid}
+            studentid={studentid}
+          />
         </Grid>
       </Container>
     );

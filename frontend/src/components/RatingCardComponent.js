@@ -72,25 +72,30 @@ const RatingCard = ({ rating }) => {
   );
 };
 
-const ratingChanged = (ratingDetails) => {
-  ratingDetails.anonymous = defaultAnon;
+const ratingChanged = ({ updateRating, rating }) => {
+  rating.anonymous = defaultAnon;
 
   if (defaultRating < 0) {
-    client.post(`/${ratingDetails.receiverId}`, ratingDetails).then((res) => {
+    client.post(`/${rating.receiverId}`, rating).then((res) => {
       console.log("rating posted!");
       console.log(res);
+      if (res.status === 201) {
+        updateRating();
+      }
     });
   } else {
-    console.log(ratingDetails);
-    client.put(`/${ratingDetails.receiverId}`, ratingDetails).then((res) => {
+    console.log(rating);
+    client.put(`/${rating.receiverId}`, rating).then((res) => {
       console.log("rating updated!");
       console.log(res);
+      if (res.status === 202) {
+        updateRating();
+      }
     });
   }
-  // window.location.reload(false);
 };
 
-const RatingCardEditable = ({ rating }) => {
+const RatingCardEditable = ({ updateRating, rating }) => {
   const classes = useStyles();
   defaultRating = rating.rating;
 
@@ -137,7 +142,7 @@ const RatingCardEditable = ({ rating }) => {
           onChange={(newRating) => {
             rating.rating = newRating;
             rating.anonymous = checked;
-            ratingChanged(rating);
+            ratingChanged({ updateRating, rating });
           }}
           value={rating.rating}
           count={5}

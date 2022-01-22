@@ -29,14 +29,14 @@ VALUES
 ("Awesome table partner.", "zv04w3y2tlcn5hj1", "Student", "fwna55ir8hqo57xl", "Student", NOW(), false),
 ("Has great leadership.", "9e8uqiz7xat21opf", "Student", "fwna55ir8hqo57xl", "Student", NOW(), false),
 ("Best CCA captain.", "w8zuzvgadqbuift3", "Student", "fwna55ir8hqo57xl", "Student", NOW(), true),
-("Hands up work on time.", "g8m1ce47c43blq0n", "Tutor", "zv04w3y2tlcn5hj1", "Student", NOW(), true),
-("Good student.", "eg05suc92vnad01m", "Tutor", "zv04w3y2tlcn5hj1", "Student", NOW(), false),
+("Hands up work on time.", "g8m1ce47c43blq0n", "Tutor", "fwna55ir8hqo57xl", "Student", NOW(), true),
+("Good student.", "eg05suc92vnad01m", "Tutor", "fwna55ir8hqo57xl", "Student", NOW(), false),
 
 ("Nice person to talk to.", "zv04w3y2tlcn5hj1", "Student", "9e8uqiz7xat21opf", "Student", NOW(), false),
 ("Love this person's personality.", "fwna55ir8hqo57xl", "Student", "9e8uqiz7xat21opf", "Student", NOW(), false),
 ("Great attitude.", "w8zuzvgadqbuift3", "Student", "9e8uqiz7xat21opf", "Student", NOW(), true),
-("Hands up work on time.", "g8m1ce47c43blq0n", "Tutor", "zv04w3y2tlcn5hj1", "Student", NOW(), true),
-("Good student.", "eg05suc92vnad01m", "Tutor", "zv04w3y2tlcn5hj1", "Student", NOW(), false);
+("Hands up work on time.", "g8m1ce47c43blq0n", "Tutor", "9e8uqiz7xat21opf", "Student", NOW(), true),
+("Good student.", "eg05suc92vnad01m", "Tutor", "9e8uqiz7xat21opf", "Student", NOW(), false);
 
 
 -- Rating Database Setup

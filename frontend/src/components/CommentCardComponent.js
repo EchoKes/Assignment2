@@ -5,11 +5,14 @@ import Typography from "@mui/material/Typography";
 import { makeStyles } from "@mui/styles";
 import axios from "axios";
 import { Checkbox, Container, FormControlLabel } from "@mui/material";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 const useStyles = makeStyles({
   commentWidth: {
-    width: 600,
-    minWidth: 600,
+    width: 550,
+    minWidth: 550,
   },
   commentEditableWidth: {
     width: 700,
@@ -20,6 +23,9 @@ const useStyles = makeStyles({
     paddingBottom: "8px",
     width: "auto",
     height: "auto",
+  },
+  input: {
+    height: "65px",
   },
 });
 
@@ -84,9 +90,14 @@ const commentChanged = (commentDetails) => {
   // window.location.reload(false);
 };
 
-const CommentCardEditable = ({ comment }) => {
+const CommentCardEditable = ({
+  receivername,
+  updateComments,
+  tutorid,
+  studentid,
+}) => {
   const classes = useStyles();
-  defaultComment = comment.comment;
+  // defaultComment = comment.comment;
 
   const [checked, setChecked] = useState(false);
 
@@ -109,7 +120,7 @@ const CommentCardEditable = ({ comment }) => {
         }}
         color="text.primary"
       >
-        Give {comment.receiverName} a comment:
+        Give {receivername} a comment:
       </Typography>
       <FormControlLabel
         sx={{
@@ -128,8 +139,84 @@ const CommentCardEditable = ({ comment }) => {
         }}
       >
         {/* TODO: comment input field */}
+        <CommentInputField
+          updateComments={updateComments}
+          tutorid={tutorid}
+          studentid={studentid}
+          anon={checked}
+        />
       </Container>
     </Card>
+  );
+};
+
+const CommentInputField = ({ updateComments, tutorid, studentid, anon }) => {
+  // create instance of class object
+  const classes = useStyles();
+  // getter and setter for comment
+  const [comment, setComment] = useState("");
+  // getter and setter for error
+  const [commentError, setCommentError] = useState(false);
+
+  // comments submit handler
+  const handleCommentSubmit = (e) => {
+    setCommentError(false);
+    e.preventDefault();
+
+    // trim whitespaces to validate empty spaces when submitting comment
+    let trimmedComment = comment;
+    trimmedComment = trimmedComment.trim();
+    if (trimmedComment != "") {
+      // create new comment object
+      const newComment = {
+        comment: trimmedComment,
+        commentorId: tutorid,
+        receiverId: studentid,
+        anonymous: anon,
+      };
+
+      client.post(`/${studentid}`, newComment).then((res) => {
+        console.log(res);
+        if (res.status === 201) {
+          updateComments();
+        }
+      });
+      document.getElementById("commentForm").reset();
+      setComment("");
+    } else {
+      setCommentError(true);
+    }
+  };
+  return (
+    <form
+      id="commentForm"
+      noValidate
+      autoComplete="off"
+      onSubmit={handleCommentSubmit}
+    >
+      <TextField
+        InputProps={{
+          className: classes.input,
+        }}
+        sx={{ width: "550px" }}
+        onChange={(e) => setComment(e.target.value)}
+        id="outlined-multiline-static"
+        label="Write Comment"
+        placeholder="Say something nice"
+        multiline
+        fullWidth
+        rows={1}
+        error={commentError}
+      />
+      <Button
+        sx={{ marginLeft: "10px" }}
+        type="submit"
+        variant="contained"
+        className={classes.input}
+      >
+        <KeyboardArrowRightIcon />
+      </Button>
+    </form>
   );
 };
 
