@@ -63,10 +63,10 @@ func allComments(w http.ResponseWriter, r *http.Request) {
 		}
 		commentScore := DB_retrieveSingleComment(comment) // TODO: change sql query to exec
 
-		// {Part 2: Rate a student}
+		// {Part 2: Comment on a student}
 		if r.Method == "POST" {
 			// TODO: remove if condition
-			if commentScore < 0 {
+			if commentScore == "nil" {
 				// Create tutor's comment for student
 				if DB_insertComment(comment) {
 					w.WriteHeader(http.StatusCreated)
@@ -242,15 +242,15 @@ func DB_retrieveAllComments(receiverId string) []Comment {
 }
 
 // DB function for retrieving tutor's comment on a student
-// returns an integer value of comment score; -1 for no comment.
-func DB_retrieveSingleComment(comment Comment) int {
+// returns comment score; "nil" if there no comments.
+func DB_retrieveSingleComment(comment Comment) string {
 	tutorId := comment.CommentorId
 	studentId := comment.ReceiverId
-	commentNum := -1
+	commentDesc := "nil"
 
 	query := fmt.Sprintf(
 		`SELECT Comment FROM Comments 
-		 WHERE RaterId = '%s' AND ReceiverId = '%s';`, tutorId, studentId)
+		 WHERE commentorId = '%s' AND receiverId = '%s';`, tutorId, studentId)
 	res, err := db.Query(query)
 
 	if err != nil {
@@ -258,18 +258,18 @@ func DB_retrieveSingleComment(comment Comment) int {
 	}
 
 	if res.Next() {
-		res.Scan(&commentNum)
+		res.Scan(&commentDesc)
 	}
 
-	return commentNum
+	return commentDesc
 }
 
 // DB function for tutor comment a student, AKA creation of comment
 // returns true if insert is successful
 func DB_insertComment(comment Comment) bool {
 	query := fmt.Sprintf(
-		`INSERT INTO Comments(comment, raterId, raterType, receiverId, receiverType, datetime, anonymous)
-		 VALUES('%d', '%s', 'Tutor', '%s', 'Student', NOW(), %t);`,
+		`INSERT INTO Comments(comment, commentorId, commentorType, receiverId, receiverType, datetime, anonymous)
+		 VALUES('%s', '%s', 'Tutor', '%s', 'Student', NOW(), %t);`,
 		comment.CommentDesc, comment.CommentorId, comment.ReceiverId, comment.Anonymous)
 	res, err := db.Exec(query)
 
@@ -285,7 +285,7 @@ func DB_insertComment(comment Comment) bool {
 // returns true if update is successful
 func DB_updateComment(comment Comment) bool {
 	query := fmt.Sprintf(
-		`UPDATE Comments SET comment = '%d', datetime = NOW(), anonymous = %t WHERE raterId = '%s' AND receiverId = '%s';`,
+		`UPDATE Comments SET comment = '%s', datetime = NOW(), anonymous = %t WHERE commentorId = '%s' AND receiverId = '%s';`,
 		comment.CommentDesc, comment.Anonymous, comment.CommentorId, comment.ReceiverId)
 	res, err := db.Exec(query)
 
@@ -346,7 +346,7 @@ func DB_retrieveGivenComments(tutorId string) []Comment {
 	var commentArray []Comment
 
 	query := fmt.Sprintf(
-		`SELECT * FROM Comments WHERE raterId = '%s';`, tutorId)
+		`SELECT * FROM Comments WHERE commentorId = '%s';`, tutorId)
 	res, err := db.Query(query)
 
 	if err != nil {
@@ -374,7 +374,7 @@ func DB_retrieveCommentFromTutor(tutorId string, studentId string) Comment {
 	c.ReceiverName = Helper_retrieveName(studentId, studentArray)
 
 	query := fmt.Sprintf(
-		`SELECT * FROM Comments WHERE raterId = '%s' 
+		`SELECT * FROM Comments WHERE commentorId = '%s' 
 		AND receiverId = '%s'`, tutorId, studentId)
 	res, err := db.Query(query)
 
@@ -395,13 +395,13 @@ func main() {
 
 	// setup routers
 	router.HandleFunc("/landing", landing)
-	router.HandleFunc("/ratings/{studentid}", allComments).Methods("GET", "POST", "PUT")
-	router.HandleFunc("/{tutorid}/ratings/received", commentsReceived).Methods("GET")
-	router.HandleFunc("/{tutorid}/ratings/anon", anonComments).Methods("GET")
-	router.HandleFunc("/{tutorid}/ratings/given", givenComments).Methods("GET")
+	router.HandleFunc("/comments/{studentid}", allComments).Methods("GET", "POST", "PUT")
+	router.HandleFunc("/{tutorid}/comments/received", commentsReceived).Methods("GET")
+	router.HandleFunc("/{tutorid}/comments/anon", anonComments).Methods("GET")
+	router.HandleFunc("/{tutorid}/comments/given", givenComments).Methods("GET")
 	router.HandleFunc("/students", allStudents).Methods("GET")
 	router.HandleFunc("/tutors", allTutors).Methods("GET")
-	router.HandleFunc("/ratings/{studentid}/{tutorid}", commentFromTutor).Methods("GET")
+	router.HandleFunc("/comments/{studentid}/{tutorid}", commentFromTutor).Methods("GET")
 
 	// establish db connection
 	var err error

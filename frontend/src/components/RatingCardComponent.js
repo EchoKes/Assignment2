@@ -6,7 +6,6 @@ import { makeStyles } from "@mui/styles";
 import ReactStars from "react-stars";
 import axios from "axios";
 import { Checkbox, Container, FormControlLabel } from "@mui/material";
-import FaceIcon from "@mui/icons-material/Face";
 
 const useStyles = makeStyles({
   ratingWidth: {
@@ -31,31 +30,6 @@ const client = axios.create({
 
 var defaultRating = -1;
 var defaultAnon = false;
-
-const HeadingCard = ({ name }) => {
-  return (
-    <CardContent>
-      <FaceIcon
-        sx={{
-          height: 110,
-          width: 110,
-          display: "inline-block",
-        }}
-      />
-      <Typography
-        variant="h2"
-        component="div"
-        noWrap
-        sx={{
-          paddingLeft: 2,
-          display: "inline-block",
-        }}
-      >
-        {name}
-      </Typography>
-    </CardContent>
-  );
-};
 
 const RatingCard = ({ rating }) => {
   const classes = useStyles();
@@ -177,4 +151,4 @@ const RatingCardEditable = ({ rating }) => {
   );
 };
 
-export { HeadingCard, RatingCard, RatingCardEditable };
+export { RatingCard, RatingCardEditable };

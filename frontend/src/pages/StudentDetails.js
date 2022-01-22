@@ -8,8 +8,12 @@ import axios from "axios";
 import {
   RatingCard,
   RatingCardEditable,
-  HeadingCard,
 } from "../components/RatingCardComponent";
+import {
+  CommentCard,
+  CommentCardEditable,
+} from "../components/CommentCardComponent";
+import HeadingCard from "../components/HeadingComponent";
 
 const useStyles = makeStyles({
   center: {
@@ -23,8 +27,12 @@ const useStyles = makeStyles({
   },
 });
 
-const client = axios.create({
+const clientRating = axios.create({
   baseURL: `http://localhost:8181/ratings`,
+});
+
+const clientComment = axios.create({
+  baseURL: `http://localhost:8182/comments`,
 });
 
 // main function including tabs
@@ -43,7 +51,7 @@ const StudentDetails = () => {
   });
 
   React.useEffect(() => {
-    client.get(`/${studentid}/${tutorid}`).then((res) => {
+    clientRating.get(`/${studentid}/${tutorid}`).then((res) => {
       console.log("initial rating details from tutor retrieved.");
       setRatingFromTutor(res.data);
     });
@@ -72,7 +80,9 @@ const StudentDetails = () => {
       {tabValue === 0 && (
         <StudentRating studentid={studentid} tutorid={tutorid} />
       )}
-      {tabValue === 1 && <StudentComment />}
+      {tabValue === 1 && (
+        <StudentComment studentid={studentid} tutorid={tutorid} />
+      )}
     </>
   );
 };
@@ -89,14 +99,14 @@ const StudentRating = ({ studentid, tutorid }) => {
   }); // api student's rating from tutor
 
   React.useEffect(() => {
-    client.get(`/${studentid}`).then((res) => {
+    clientRating.get(`/${studentid}`).then((res) => {
       console.log(res.data);
       setRatingsArray(res.data);
     });
   }, []);
 
   React.useEffect(() => {
-    client.get(`/${studentid}/${tutorid}`).then((res) => {
+    clientRating.get(`/${studentid}/${tutorid}`).then((res) => {
       console.log("rating from tutor retrieved.");
       setRatingFromTutor(res.data);
     });
@@ -129,15 +139,56 @@ const StudentRating = ({ studentid, tutorid }) => {
   }
 };
 
-const StudentComment = () => {
+// function for getting comment of student from api
+const StudentComment = ({ studentid, tutorid }) => {
   const classes = useStyles();
-  return (
-    <Container className={classes.container}>
-      <Grid className={classes.center}>
-        <p>this one comments sections hehe.</p>
-      </Grid>
-    </Container>
-  );
+
+  const [commentsArray, setCommentsArray] = useState(() => {
+    return null;
+  });
+  const [commentFromTutor, setCommentFromTutor] = useState(() => {
+    return "";
+  });
+
+  React.useEffect(() => {
+    clientComment.get(`/${studentid}`).then((res) => {
+      console.log(res.data);
+      setCommentsArray(res.data);
+    });
+  }, []);
+
+  React.useEffect(() => {
+    clientComment.get(`/${studentid}/${tutorid}`).then((res) => {
+      console.log("comment from tutor retrieved.");
+      setCommentFromTutor(res.data);
+    });
+  }, []);
+
+  if (!commentsArray) {
+    return (
+      <Container className={classes.container}>
+        <p className={classes.center}>No comments given yet :C</p>
+        <Grid container className={classes.center}>
+          <CommentCardEditable comment={commentFromTutor} />
+        </Grid>
+      </Container>
+    );
+  } else {
+    return (
+      <Container className={classes.container}>
+        {commentsArray.map((comment) => {
+          return (
+            <Grid container className={classes.center} key={comment.id}>
+              <CommentCard comment={comment} tutorid={tutorid} />
+            </Grid>
+          );
+        })}
+        <Grid className={classes.center}>
+          <CommentCardEditable comment={commentFromTutor} />
+        </Grid>
+      </Container>
+    );
+  }
 };
 
 export { StudentDetails, StudentRating, StudentComment };
