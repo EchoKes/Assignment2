@@ -25,7 +25,7 @@ const useStyles = makeStyles({
 });
 
 const client = axios.create({
-  baseURL: `http://10.31.11.11:8181/ratings`,
+  baseURL: `http://localhost:8181/ratings`,
 });
 
 // function for getting ratings of student from api

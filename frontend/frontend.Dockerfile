@@ -1,13 +1,13 @@
 FROM node:latest
 
-WORKDIR /usr/src/app/frontend
+WORKDIR /app
 
-COPY package*.json ./
+COPY package.json ./
 
 RUN npm install
 
-EXPOSE 8180
+# EXPOSE 8180
 
-COPY . .
+COPY . ./
 
 CMD ["npm", "start"]

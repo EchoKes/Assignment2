@@ -8,17 +8,18 @@ services:
       context: ./Database
       dockerfile: ratingDB.Dockerfile
     image: echokes/rating_db_image
-    network_mode: bridge
     environment:
-      # MYSQL_TCP_PORT: 8185
+      MYSQL_TCP_PORT: 8185
       MYSQL_ROOT_PASSWORD: "password"
-    # ports:
-    #   - 8185:8185
+    ports:
+      - 8185:3306
     # deploy:
     #   restart_policy:
     #     condition: on-failure
     volumes:
       - rating_data:/var/lib/mysql
+    networks:
+      - assignment2bridge
   # Comment database
   commentDB:
     container_name: "db_comment"
@@ -26,17 +27,18 @@ services:
       context: ./Database
       dockerfile: commentDB.Dockerfile
     image: echokes/comment_db_image
-    network_mode: bridge
     environment:
-      # MYSQL_TCP_PORT: 8186
+      MYSQL_TCP_PORT: 8186
       MYSQL_ROOT_PASSWORD: "password"
-    # ports:
-    #   - 8186:8186
+    ports:
+      - 8186:3306
     # deploy:
     #   restart_policy:
     #     condition: on-failure
     volumes:
       - comment_data:/var/lib/mysql
+    networks:
+      - assignment2bridge
 # Student database
   studentDB:
     container_name: "db_student"
@@ -44,17 +46,18 @@ services:
       context: ./Database
       dockerfile: studentDB.Dockerfile
     image: echokes/student_db_image
-    network_mode: bridge
     environment:
-      # MYSQL_TCP_PORT: 8187
+      MYSQL_TCP_PORT: 8187
       MYSQL_ROOT_PASSWORD: "password"
-    # ports:
-    #   - 8187:8187
+    ports:
+      - 8187:3306
     # deploy:
     #   restart_policy:
     #     condition: on-failure
     volumes:
       - student_data:/var/lib/mysql
+    networks:
+      - assignment2bridge
   # Tutor databse
   tutorDB:
     container_name: "db_tutor"
@@ -62,17 +65,18 @@ services:
       context: ./Database
       dockerfile: tutorDB.Dockerfile
     image: echokes/tutor_db_image
-    network_mode: bridge
     environment:
-      # MYSQL_TCP_PORT: 8188
+      MYSQL_TCP_PORT: 8188
       MYSQL_ROOT_PASSWORD: "password"
-    # ports:
-    #   - 8188:8188
+    ports:
+      - 8188:3306
     # deploy:
     #   restart_policy:
     #     condition: on-failure
     volumes:
       - tutor_data:/var/lib/mysql
+    networks:
+      - assignment2bridge
   # Frontend server
   frontend:
     container_name: frontend_react
@@ -90,10 +94,12 @@ services:
       dockerfile: frontend.Dockerfile
     image: echokes/frontend_react_image
     ports:
-      - 8180:8180
+      - 8180:3000
     stdin_open: true
     volumes:
-      - /usr/src/app/frontend/node_modules
+      - node_modules:/app/node_modules
+    networks:
+      - assignment2bridge
     # deploy:
     #   restart_policy:
     #     condition: on-failure
@@ -109,6 +115,8 @@ services:
     container_name: ms_rating
     ports:
       - 8181:8181
+    networks:
+      - assignment2bridge
 
   # Comment Microservice
   commentMS:
@@ -121,6 +129,8 @@ services:
     container_name: ms_comment
     ports:
       - 8182:8182
+    networks:
+      - assignment2bridge
 
   # Student Mocked Microservice
   studentMS:
@@ -133,6 +143,8 @@ services:
     container_name: ms_student
     ports:
       - 8183:8183
+    networks:
+      - assignment2bridge
       
   # Tutor Mocked Microservice
   tutorMS:
@@ -145,10 +157,17 @@ services:
     container_name: ms_tutor
     ports:
       - 8184:8184
+    networks:
+      - assignment2bridge
 
 volumes:
   rating_data: null
   comment_data: null
   student_data: null
   tutor_data: null
+  node_modules: null
+
+networks:
+  assignment2bridge:
+    driver: bridge
 
