@@ -15,9 +15,9 @@ services:
       MYSQL_ROOT_PASSWORD: "password"
     ports:
       - 8185:8185
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
     volumes:
       - rating_data:/var/lib/mysql
   # Comment database
@@ -34,9 +34,9 @@ services:
       MYSQL_ROOT_PASSWORD: "password"
     ports:
       - 8186:8186
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
     volumes:
       - comment_data:/var/lib/mysql
 # Student database
@@ -53,9 +53,9 @@ services:
       MYSQL_ROOT_PASSWORD: "password"
     ports:
       - 8187:8187
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
     volumes:
       - student_data:/var/lib/mysql
   # Tutor databse
@@ -72,9 +72,9 @@ services:
       MYSQL_ROOT_PASSWORD: "password"
     ports:
       - 8188:8188
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
     volumes:
       - tutor_data:/var/lib/mysql
   # Frontend server
@@ -98,9 +98,9 @@ services:
     stdin_open: true
     volumes:
       - /usr/src/app/frontend/node_modules
-    deploy:
-      restart_policy:
-        condition: on-failure
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
 
   # Rating Microservice
   ratingMS:
