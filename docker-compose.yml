@@ -10,7 +10,7 @@ services:
     image: echokes/rating_db_image
     network_mode: bridge
     environment:
-      MYSQL_TCP_PORT: 8185
+      # MYSQL_TCP_PORT: 8185
       MYSQL_ROOT_PASSWORD: "password"
     ports:
       - 8185:8185
@@ -28,7 +28,7 @@ services:
     image: echokes/comment_db_image
     network_mode: bridge
     environment:
-      MYSQL_TCP_PORT: 8186
+      # MYSQL_TCP_PORT: 8186
       MYSQL_ROOT_PASSWORD: "password"
     ports:
       - 8186:8186
@@ -46,7 +46,7 @@ services:
     image: echokes/student_db_image
     network_mode: bridge
     environment:
-      MYSQL_TCP_PORT: 8187
+      # MYSQL_TCP_PORT: 8187
       MYSQL_ROOT_PASSWORD: "password"
     ports:
       - 8187:8187
@@ -64,7 +64,7 @@ services:
     image: echokes/tutor_db_image
     network_mode: bridge
     environment:
-      MYSQL_TCP_PORT: 8188
+      # MYSQL_TCP_PORT: 8188
       MYSQL_ROOT_PASSWORD: "password"
     ports:
       - 8188:8188
@@ -145,7 +145,7 @@ services:
     container_name: ms_tutor
     ports:
       - 8184:8184
-      
+
 volumes:
   rating_data: null
   comment_data: null
