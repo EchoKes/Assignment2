@@ -12,8 +12,8 @@ services:
     environment:
       # MYSQL_TCP_PORT: 8185
       MYSQL_ROOT_PASSWORD: "password"
-    ports:
-      - 8185:8185
+    # ports:
+    #   - 8185:8185
     # deploy:
     #   restart_policy:
     #     condition: on-failure
@@ -30,8 +30,8 @@ services:
     environment:
       # MYSQL_TCP_PORT: 8186
       MYSQL_ROOT_PASSWORD: "password"
-    ports:
-      - 8186:8186
+    # ports:
+    #   - 8186:8186
     # deploy:
     #   restart_policy:
     #     condition: on-failure
@@ -48,8 +48,8 @@ services:
     environment:
       # MYSQL_TCP_PORT: 8187
       MYSQL_ROOT_PASSWORD: "password"
-    ports:
-      - 8187:8187
+    # ports:
+    #   - 8187:8187
     # deploy:
     #   restart_policy:
     #     condition: on-failure
@@ -66,8 +66,8 @@ services:
     environment:
       # MYSQL_TCP_PORT: 8188
       MYSQL_ROOT_PASSWORD: "password"
-    ports:
-      - 8188:8188
+    # ports:
+    #   - 8188:8188
     # deploy:
     #   restart_policy:
     #     condition: on-failure
