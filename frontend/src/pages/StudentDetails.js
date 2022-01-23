@@ -28,11 +28,11 @@ const useStyles = makeStyles({
 });
 
 const clientRating = axios.create({
-  baseURL: `http://localhost:8181/ratings`,
+  baseURL: `http://10.31.11.11:8181/ratings`,
 });
 
 const clientComment = axios.create({
-  baseURL: `http://localhost:8182/comments`,
+  baseURL: `http://10.31.11.11:8182/comments`,
 });
 
 // main function including tabs

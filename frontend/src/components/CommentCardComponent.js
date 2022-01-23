@@ -30,7 +30,7 @@ const useStyles = makeStyles({
 });
 
 const client = axios.create({
-  baseURL: `http://localhost:8182/comments`,
+  baseURL: `http://10.31.11.11:8182/comments`,
 });
 
 var defaultComment = "nil";

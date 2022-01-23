@@ -1,0 +1,161 @@
+version: '3.8'
+
+services:
+  # MYSQL Databases
+  ratingDB:
+    container_name: "db_rating"
+    build:
+      context: ./Database
+      dockerfile: ratingDB.Dockerfile
+    image: echokes/rating_db_image
+    networks:
+      - custom_network
+    environment:
+      MYSQL_TCP_PORT: 8185
+      MYSQL_ROOT_PASSWORD: "password"
+    ports:
+      - 8185:8185
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - rating_data:/var/lib/mysql
+  # Comment database
+  commentDB:
+    container_name: "db_comment"
+    build:
+      context: ./Database
+      dockerfile: commentDB.Dockerfile
+    image: echokes/comment_db_image
+    networks:
+      - custom_network
+    environment:
+      MYSQL_TCP_PORT: 8186
+      MYSQL_ROOT_PASSWORD: "password"
+    ports:
+      - 8186:8186
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - comment_data:/var/lib/mysql
+# Student database
+  studentDB:
+    container_name: "db_student"
+    build:
+      context: ./Database
+      dockerfile: studentDB.Dockerfile
+    image: echokes/student_db_image
+    networks:
+      - custom_network
+    environment:
+      MYSQL_TCP_PORT: 8187
+      MYSQL_ROOT_PASSWORD: "password"
+    ports:
+      - 8187:8187
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - student_data:/var/lib/mysql
+  # Tutor databse
+  tutorDB:
+    container_name: "db_tutor"
+    build:
+      context: ./Database
+      dockerfile: tutorDB.Dockerfile
+    image: echokes/tutor_db_image
+    networks:
+      - custom_network
+    environment:
+      MYSQL_TCP_PORT: 8188
+      MYSQL_ROOT_PASSWORD: "password"
+    ports:
+      - 8188:8188
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - tutor_data:/var/lib/mysql
+  # Frontend server
+  frontend:
+    container_name: frontend_react
+    depends_on:
+      - ratingMS
+      - commentMS
+      - studentMS
+      - tutorMS
+      - ratingDB
+      - commentDB
+      - studentDB
+      - tutorDB
+    build:
+      context: ./frontend
+      dockerfile: frontend.Dockerfile
+    image: echokes/frontend_react_image
+    ports:
+      - 8180:8180
+    stdin_open: true
+    volumes:
+      - /usr/src/app/frontend/node_modules
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  # Rating Microservice
+  ratingMS:
+    depends_on:
+      - ratingDB
+    build:
+      context: ./Microservices/Rating
+      dockerfile: rating.Dockerfile
+    image: echokes/rating_ms_image
+    container_name: ms_rating
+    ports:
+      - 8181:8181
+
+  # Comment Microservice
+  commentMS:
+    depends_on:
+      - commentDB
+    build:
+      context: ./Microservices/Comment
+      dockerfile: comment.Dockerfile
+    image: echokes/comment_ms_image
+    container_name: ms_comment
+    ports:
+      - 8182:8182
+
+  # Student Mocked Microservice
+  studentMS:
+    depends_on:
+      - studentDB
+    build:
+      context: ./Microservices/Student
+      dockerfile: student.Dockerfile
+    image: echokes/student_ms_image
+    container_name: ms_student
+    ports:
+      - 8183:8183
+      
+  # Tutor Mocked Microservice
+  tutorMS:
+    depends_on:
+      - tutorDB
+    build:
+      context: ./Microservices/Tutor
+      dockerfile: tutor.Dockerfile
+    image: echokes/tutor_ms_image
+    container_name: ms_tutor
+    ports:
+      - 8184:8184
+
+networks:
+  custom_network:
+    driver: network_3dot10
+volumes:
+  rating_data: null
+  comment_data: null
+  student_data: null
+  tutor_data: null
+
