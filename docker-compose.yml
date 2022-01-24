@@ -160,7 +160,6 @@ services:
     networks:
       - assignment2bridge
 
-# volumes
 volumes:
   rating_data: null
   comment_data: null
