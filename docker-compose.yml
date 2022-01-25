@@ -3,7 +3,7 @@ version: '3.3'
 services:
   # MYSQL Databases
   ratingDB:
-    container_name: "db_rating"
+    container_name: "18-db_rating"
     build:
       context: ./Database
       dockerfile: ratingDB.Dockerfile
@@ -22,7 +22,7 @@ services:
       - assignment2bridge
   # Comment database
   commentDB:
-    container_name: "db_comment"
+    container_name: "18-db_comment"
     build:
       context: ./Database
       dockerfile: commentDB.Dockerfile
@@ -41,7 +41,7 @@ services:
       - assignment2bridge
 # Student database
   studentDB:
-    container_name: "db_student"
+    container_name: "18-db_student"
     build:
       context: ./Database
       dockerfile: studentDB.Dockerfile
@@ -60,7 +60,7 @@ services:
       - assignment2bridge
   # Tutor databse
   tutorDB:
-    container_name: "db_tutor"
+    container_name: "18-db_tutor"
     build:
       context: ./Database
       dockerfile: tutorDB.Dockerfile
@@ -79,7 +79,7 @@ services:
       - assignment2bridge
   # Frontend server
   frontend:
-    container_name: frontend_react
+    container_name: 18-frontend_react
     depends_on:
       - ratingMS
       - commentMS
@@ -112,7 +112,7 @@ services:
       context: ./Microservices/Rating
       dockerfile: rating.Dockerfile
     image: 18-rating_ms_image
-    container_name: ms_rating
+    container_name: 18-ms_rating
     ports:
       - 8181:8181
     networks:
@@ -126,7 +126,7 @@ services:
       context: ./Microservices/Comment
       dockerfile: comment.Dockerfile
     image: 18-comment_ms_image
-    container_name: ms_comment
+    container_name: 18-ms_comment
     ports:
       - 8182:8182
     networks:
@@ -140,7 +140,7 @@ services:
       context: ./Microservices/Student
       dockerfile: student.Dockerfile
     image: 18-student_ms_image
-    container_name: ms_student
+    container_name: 18-ms_student
     ports:
       - 8183:8183
     networks:
@@ -154,7 +154,7 @@ services:
       context: ./Microservices/Tutor
       dockerfile: tutor.Dockerfile
     image: 18-tutor_ms_image
-    container_name: ms_tutor
+    container_name: 18-ms_tutor
     ports:
       - 8184:8184
     networks:
