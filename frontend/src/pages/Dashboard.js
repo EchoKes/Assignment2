@@ -10,8 +10,10 @@ const useStyles = makeStyles({
   },
 });
 
+const { REACT_APP_RATING_URL } = process.env;
+
 const client = axios.create({
-  baseURL: "http://localhost:8181",
+  baseURL: REACT_APP_RATING_URL,
 });
 
 const Dashboard = () => {

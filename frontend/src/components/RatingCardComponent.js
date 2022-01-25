@@ -24,8 +24,10 @@ const useStyles = makeStyles({
   },
 });
 
+const { REACT_APP_RATING_URL } = process.env;
+
 const client = axios.create({
-  baseURL: `http://localhost:8181/ratings`,
+  baseURL: `${REACT_APP_RATING_URL}/ratings`,
 });
 
 var defaultRating = -1;

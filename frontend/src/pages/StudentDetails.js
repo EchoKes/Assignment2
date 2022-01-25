@@ -27,12 +27,14 @@ const useStyles = makeStyles({
   },
 });
 
+const { REACT_APP_RATING_URL, REACT_APP_COMMENT_URL } = process.env;
+
 const clientRating = axios.create({
-  baseURL: `http://localhost:8181/ratings`,
+  baseURL: `${REACT_APP_RATING_URL}/ratings`,
 });
 
 const clientComment = axios.create({
-  baseURL: `http://localhost:8182/comments`,
+  baseURL: `${REACT_APP_COMMENT_URL}/comments`,
 });
 
 // main function including tabs
