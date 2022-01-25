@@ -34,8 +34,8 @@ type Person struct {
 
 var db *sql.DB
 
-const student_url = "http://studentMS:8183/students"
-const tutor_url = "http://tutorMS:8184/tutors"
+const student_url = "http://ms_student:8183/students"
+const tutor_url = "http://ms_tutor:8184/tutors"
 
 func landing(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "~ Ratings & Comments Dashboard ~")
@@ -406,7 +406,7 @@ func main() {
 	// establish db connection
 	var err error
 	//db, err = sql.Open("mysql", "root:password@tcp(db:3318)/comment_db")
-	db, err = sql.Open("mysql", "root:password@tcp(commentDB:8186)/comment_db")
+	db, err = sql.Open("mysql", "root:password@tcp(db_comment:8186)/comment_db")
 	if err != nil {
 		panic(err.Error())
 	}

@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   # MYSQL Databases
-  ratingDB:
+  db_rating:
     container_name: "18-db_rating"
     build:
       context: ./Database
@@ -21,7 +21,7 @@ services:
     networks:
       - assignment2bridge
   # Comment database
-  commentDB:
+  db_comment:
     container_name: "18-db_comment"
     build:
       context: ./Database
@@ -40,7 +40,7 @@ services:
     networks:
       - assignment2bridge
 # Student database
-  studentDB:
+  db_student:
     container_name: "18-db_student"
     build:
       context: ./Database
@@ -59,7 +59,7 @@ services:
     networks:
       - assignment2bridge
   # Tutor databse
-  tutorDB:
+  db_tutor:
     container_name: "18-db_tutor"
     build:
       context: ./Database
@@ -81,14 +81,14 @@ services:
   frontend:
     container_name: 18-frontend_react
     depends_on:
-      - ratingMS
-      - commentMS
-      - studentMS
-      - tutorMS
-      - ratingDB
-      - commentDB
-      - studentDB
-      - tutorDB
+      - ms_rating
+      - ms_comment
+      - ms_student
+      - ms_tutor
+      - db_rating
+      - db_comment
+      - db_student
+      - db_tutor
     build:
       context: ./frontend
       dockerfile: frontend.Dockerfile
@@ -105,9 +105,9 @@ services:
     #     condition: on-failure
 
   # Rating Microservice
-  ratingMS:
+  ms_rating:
     depends_on:
-      - ratingDB
+      - db_rating
     build:
       context: ./Microservices/Rating
       dockerfile: rating.Dockerfile
@@ -119,9 +119,9 @@ services:
       - assignment2bridge
 
   # Comment Microservice
-  commentMS:
+  ms_comment:
     depends_on:
-      - commentDB
+      - db_comment
     build:
       context: ./Microservices/Comment
       dockerfile: comment.Dockerfile
@@ -133,9 +133,9 @@ services:
       - assignment2bridge
 
   # Student Mocked Microservice
-  studentMS:
+  ms_student:
     depends_on:
-      - studentDB
+      - db_student
     build:
       context: ./Microservices/Student
       dockerfile: student.Dockerfile
@@ -147,9 +147,9 @@ services:
       - assignment2bridge
       
   # Tutor Mocked Microservice
-  tutorMS:
+  ms_tutor:
     depends_on:
-      - tutorDB
+      - db_tutor
     build:
       context: ./Microservices/Tutor
       dockerfile: tutor.Dockerfile

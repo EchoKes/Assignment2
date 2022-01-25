@@ -63,7 +63,7 @@ func main() {
 	// establish db connection
 	var err error
 	//db, err = sql.Open("mysql", "root:password@tcp(db:3318)/tutor_db") <- to change
-	db, err = sql.Open("mysql", "root:password@tcp(tutorDB:8188)/tutor_db")
+	db, err = sql.Open("mysql", "root:password@tcp(db_tutor:8188)/tutor_db")
 	if err != nil {
 		panic(err.Error())
 	}
