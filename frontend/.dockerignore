@@ -1,4 +1,6 @@
 node_modules
-frontend.Dockerfile
+build
 .dockerignore
+frontend.Dockerfile
+frontend-dev.Dockerfile
 README.md
