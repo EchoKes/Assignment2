@@ -10,10 +10,10 @@ const useStyles = makeStyles({
   },
 });
 
-const { REACT_APP_RATING_URL } = process.env;
+const { REACT_APP_ALLSTUDENTS_URL } = process.env;
 
 const client = axios.create({
-  baseURL: REACT_APP_RATING_URL,
+  baseURL: REACT_APP_ALLSTUDENTS_URL,
 });
 
 const Dashboard = () => {
@@ -25,7 +25,7 @@ const Dashboard = () => {
   const [studentArray, setStudentArray] = useState(null); // api student details
 
   React.useEffect(() => {
-    client.get("/students").then((res) => {
+    client.get("").then((res) => {
       console.log(res.data);
       setStudentArray(res.data);
     });

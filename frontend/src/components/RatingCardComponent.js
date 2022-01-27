@@ -24,10 +24,10 @@ const useStyles = makeStyles({
   },
 });
 
-const { REACT_APP_RATING_URL } = process.env;
+const { REACT_APP_STUDENT_RATING_URL } = process.env;
 
 const client = axios.create({
-  baseURL: `${REACT_APP_RATING_URL}/ratings`,
+  baseURL: `${REACT_APP_STUDENT_RATING_URL}`,
 });
 
 var defaultRating = -1;

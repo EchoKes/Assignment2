@@ -27,14 +27,15 @@ const useStyles = makeStyles({
   },
 });
 
-const { REACT_APP_RATING_URL, REACT_APP_COMMENT_URL } = process.env;
+const { REACT_APP_STUDENT_RATING_URL, REACT_APP_STUDENT_COMMENT_URL } =
+  process.env;
 
 const clientRating = axios.create({
-  baseURL: `${REACT_APP_RATING_URL}/ratings`,
+  baseURL: `${REACT_APP_STUDENT_RATING_URL}`,
 });
 
 const clientComment = axios.create({
-  baseURL: `${REACT_APP_COMMENT_URL}/comments`,
+  baseURL: `${REACT_APP_STUDENT_COMMENT_URL}`,
 });
 
 // main function including tabs
@@ -53,7 +54,7 @@ const StudentDetails = () => {
   });
 
   React.useEffect(() => {
-    clientRating.get(`/${studentid}/${tutorid}`).then((res) => {
+    clientRating.get(`/${studentid}/from/${tutorid}`).then((res) => {
       console.log("initial rating details from tutor retrieved.");
       setRatingFromTutor(res.data);
     });
@@ -110,7 +111,7 @@ const StudentRating = ({ studentid, tutorid }) => {
 
   const [ratingFromTutor, setRatingFromTutor] = useState(""); // api student's rating from tutor
   const retrieveRatingFromTutor = () => {
-    clientRating.get(`/${studentid}/${tutorid}`).then((res) => {
+    clientRating.get(`/${studentid}/from/${tutorid}`).then((res) => {
       console.log("rating from tutor retrieved.");
       setRatingFromTutor(res.data);
     });

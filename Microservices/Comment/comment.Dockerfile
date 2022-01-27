@@ -1,28 +1,15 @@
-#
-# Build
-#
-
-FROM golang:1.16-buster AS build
-
+# Build stage
+FROM golang:1.16-alpine3.13 AS build
 WORKDIR /app
+COPY . .
 
-COPY go.mod .
-COPY go.sum .
 RUN go mod download
+RUN go build -o comment comment.go
 
-COPY *.go ./
+# Run stage
+FROM alpine:3.13
+WORKDIR /app
+COPY --from=build /app/comment .
 
-RUN go build -o /comment
-
-##
-## Deploy
-##
-
-FROM gcr.io/distroless/base-debian10
-
-WORKDIR /
-COPY --from=build /comment /comment
 EXPOSE 8182
-USER nonroot:nonroot
-
-ENTRYPOINT ["/comment"]
+CMD [ "/app/comment" ]

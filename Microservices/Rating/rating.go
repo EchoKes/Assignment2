@@ -7,9 +7,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
-
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
@@ -390,18 +390,24 @@ func DB_retrieveRatingFromTutor(tutorId string, studentId string) Rating {
 }
 
 func main() {
+	// environment variables
+	BASE_STUDENT_API_URL := os.Getenv("BASE_RATINGS_API_STUDENT_URL")
+	BASE_TUTOR_API_URL := os.Getenv("BASE_RATINGS_API_TUTOR_URL")
+	ALLSTUDENTS_API_URL := os.Getenv("ALLSTUDENTS_API_URL")
+	ALLTUTORS_API_URL := os.Getenv("ALLTUTORS_API_URL")
+	fmt.Println(ALLSTUDENTS_API_URL)
 	// start router
 	router := mux.NewRouter()
 
 	// setup routers
 	router.HandleFunc("/landing", landing)
-	router.HandleFunc("/ratings/{studentid}", allRatings).Methods("GET", "POST", "PUT")
-	router.HandleFunc("/{tutorid}/ratings/received", ratingsReceived).Methods("GET")
-	router.HandleFunc("/{tutorid}/ratings/anon", anonRatings).Methods("GET")
-	router.HandleFunc("/{tutorid}/ratings/given", givenRatings).Methods("GET")
-	router.HandleFunc("/students", allStudents).Methods("GET")
-	router.HandleFunc("/tutors", allTutors).Methods("GET")
-	router.HandleFunc("/ratings/{studentid}/{tutorid}", ratingFromTutor).Methods("GET")
+	router.HandleFunc(BASE_STUDENT_API_URL, allRatings).Methods("GET", "POST", "PUT")
+	router.HandleFunc(BASE_TUTOR_API_URL+"/received", ratingsReceived).Methods("GET")
+	router.HandleFunc(BASE_TUTOR_API_URL+"/anon", anonRatings).Methods("GET")
+	router.HandleFunc(BASE_TUTOR_API_URL+"/given", givenRatings).Methods("GET")
+	router.HandleFunc(ALLSTUDENTS_API_URL, allStudents).Methods("GET")
+	router.HandleFunc(ALLTUTORS_API_URL, allTutors).Methods("GET")
+	router.HandleFunc(BASE_STUDENT_API_URL+"/from/{tutorid}", ratingFromTutor).Methods("GET")
 
 	// establish db connection
 	var err error

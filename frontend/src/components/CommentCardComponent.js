@@ -29,9 +29,9 @@ const useStyles = makeStyles({
   },
 });
 
-const { REACT_APP_COMMENT_URL } = process.env;
+const { REACT_APP_STUDENT_COMMENT_URL } = process.env;
 const client = axios.create({
-  baseURL: `${REACT_APP_COMMENT_URL}/comments`,
+  baseURL: `${REACT_APP_STUDENT_COMMENT_URL}`,
 });
 
 var defaultComment = "nil";

@@ -77,33 +77,33 @@ services:
       - tutor_data:/var/lib/mysql
     networks:
       - assignment2bridge
-  # Frontend server
-  frontend:
-    container_name: 18-frontend_react
-    depends_on:
-      - ms_rating
-      - ms_comment
-      - ms_student
-      - ms_tutor
-      - db_rating
-      - db_comment
-      - db_student
-      - db_tutor
-    build:
-      context: ./frontend
-      dockerfile: frontend.Dockerfile
-    # image: 18-frontend_react_image
-    ports:
-      - 8180:3000
-    stdin_open: true
-    volumes:
-      - node_modules:/app/node_modules
-      # - ./frontend:/app
-    networks:
-      - assignment2bridge
-    # deploy:
-    #   restart_policy:
-    #     condition: on-failure
+  # # Frontend server
+  # frontend:
+  #   container_name: 18-frontend_react
+  #   depends_on:
+  #     - ms_rating
+  #     - ms_comment
+  #     - ms_student
+  #     - ms_tutor
+  #     - db_rating
+  #     - db_comment
+  #     - db_student
+  #     - db_tutor
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: frontend.Dockerfile
+  #   # image: 18-frontend_react_image
+  #   ports:
+  #     - 8180:3000
+  #   stdin_open: true
+  #   volumes:
+  #     - node_modules:/app/node_modules
+  #     # - ./frontend:/app
+  #   networks:
+  #     - assignment2bridge
+  #   # deploy:
+  #   #   restart_policy:
+  #   #     condition: on-failure
 
   # Rating Microservice
   ms_rating:
@@ -112,6 +112,13 @@ services:
     build:
       context: ./Microservices/Rating
       dockerfile: rating.Dockerfile
+    env_file:
+      - ./Microservices/Rating/rating.env
+    # environment:
+    #   - BASE_RATINGS_API_STUDENT_URL=/ratings/student/{studentid}
+    #   - BASE_RATINGS_API_TUTOR_URL=/ratings/tutor/{tutorid}
+    #   - ALLSTUDENTS_API_URL=/students
+    #   - ALLTUTORS_API_URL=/tutors
     # image: 18-rating_ms_image
     container_name: 18-ms_rating
     ports:
@@ -126,6 +133,13 @@ services:
     build:
       context: ./Microservices/Comment
       dockerfile: comment.Dockerfile
+    env_file:
+      - ./Microservices/Comment/comment.env
+    # environment:
+    #   - BASE_COMMENTS_API_STUDENT_URL=/comments/student/{studentid}
+    #   - BASE_COMMENTS_API_TUTOR_URL=/comments/tutor/{tutorid}
+    #   - ALLSTUDENTS_API_URL=/students
+    #   - ALLTUTORS_API_URL=/tutors
     # image: 18-comment_ms_image
     container_name: 18-ms_comment
     ports:
@@ -166,7 +180,7 @@ volumes:
   comment_data: null
   student_data: null
   tutor_data: null
-  node_modules: null
+  # node_modules: null
 
 networks:
   assignment2bridge:

@@ -1,28 +1,15 @@
-#
-# Build
-#
-
-FROM golang:1.16-buster AS build
-
+# Build stage
+FROM golang:1.16-alpine3.13 AS build
 WORKDIR /app
+COPY . .
 
-COPY go.mod .
-COPY go.sum .
 RUN go mod download
+RUN go build -o rating rating.go
 
-COPY *.go ./
+# Run stage
+FROM alpine:3.13
+WORKDIR /app
+COPY --from=build /app/rating .
 
-RUN go build -o /rating
-
-##
-## Deploy
-##
-
-FROM gcr.io/distroless/base-debian10
-
-WORKDIR /
-COPY --from=build /rating /rating
 EXPOSE 8181
-USER nonroot:nonroot
-
-ENTRYPOINT ["/rating"]
+CMD [ "/app/rating" ]
