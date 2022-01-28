@@ -48,10 +48,27 @@ func allComments(w http.ResponseWriter, r *http.Request) {
 	studentId := params["studentid"]
 	// {Part 1: Retrieve all comments}
 	if r.Method == "GET" {
-		comments := DB_retrieveAllComments(studentId)
-		json.NewEncoder(w).Encode(comments)
-		w.WriteHeader(http.StatusAccepted)
-		// w.Write([]byte("202 - All comments retrieved"))
+		showIdValue := r.URL.Query().Get("showid")
+		showid := false
+		correctIdValue := true
+		switch showIdValue {
+		case "0":
+			break
+		case "1":
+			showid = true
+		default:
+			correctIdValue = false
+		}
+		if correctIdValue {
+			comments := DB_retrieveAllComments(studentId, showid)
+			json.NewEncoder(w).Encode(comments)
+			w.WriteHeader(http.StatusAccepted)
+			// w.Write([]byte("202 - All comments retrieved"))
+		} else {
+			w.WriteHeader(http.StatusNotAcceptable)
+			w.Write([]byte("No url query or incorrect id value in url query. Please use 1 for true, 0 for false."))
+		}
+
 	}
 	if r.Header.Get("Content-type") == "application/json" {
 		var comment Comment
@@ -189,7 +206,7 @@ func Helper_retrieveName(id string, personArray []Person) string {
 
 // DB function for retrieving all comments of student
 // returns an array of type Comment of all comments
-func DB_retrieveAllComments(receiverId string) []Comment {
+func DB_retrieveAllComments(receiverId string, showid bool) []Comment {
 	var commentArray []Comment
 
 	query := fmt.Sprintf(`
@@ -218,9 +235,7 @@ func DB_retrieveAllComments(receiverId string) []Comment {
 		receiverName := Helper_retrieveName(c.ReceiverId, personArray)
 		c.ReceiverName = receiverName
 
-		if c.Anonymous {
-			c.CommentorName = "Anonymous"
-		} else {
+		if showid {
 			switch c.CommentorType {
 			case "Student":
 				personArray = studentArray
@@ -229,6 +244,11 @@ func DB_retrieveAllComments(receiverId string) []Comment {
 			}
 			commentorName := Helper_retrieveName(c.CommentorId, personArray)
 			c.CommentorName = commentorName
+		} else {
+			if c.Anonymous {
+				c.CommentorName = ""
+				c.CommentorId = ""
+			}
 		}
 		commentArray = append(commentArray, c)
 	}
@@ -281,8 +301,8 @@ func DB_insertComment(comment Comment) bool {
 // returns true if update is successful
 func DB_updateComment(comment Comment) bool {
 	query := fmt.Sprintf(
-		`UPDATE Comments SET comment = '%s', datetime = NOW(), anonymous = %t WHERE commentorId = '%s' AND receiverId = '%s';`,
-		comment.CommentDesc, comment.Anonymous, comment.CommentorId, comment.ReceiverId)
+		`UPDATE Comments SET comment = '%s', datetime = NOW(), anonymous = %t WHERE id = '%s';`,
+		comment.CommentDesc, comment.Anonymous, comment.Id)
 	res, err := db.Exec(query)
 
 	if err != nil {

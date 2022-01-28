@@ -36,6 +36,10 @@ var defaultAnon = false;
 const RatingCard = ({ rating }) => {
   const classes = useStyles();
 
+  if (rating.anonymous) {
+    rating.raterName = "Anonymous";
+  }
+
   return (
     <Card
       className={classes.ratingWidth}

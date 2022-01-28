@@ -47,10 +47,27 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 	studentId := params["studentid"]
 	// {Part 1: Retrieve all ratings}
 	if r.Method == "GET" {
-		ratings := DB_retrieveAllRatings(studentId)
-		json.NewEncoder(w).Encode(ratings)
-		w.WriteHeader(http.StatusAccepted)
-		// w.Write([]byte("202 - All ratings retrieved"))
+		showIdValue := r.URL.Query().Get("showid")
+		showid := false
+		correctIdValue := true
+		switch showIdValue {
+		case "0":
+			break
+		case "1":
+			showid = true
+		default:
+			correctIdValue = false
+		}
+		if correctIdValue {
+			ratings := DB_retrieveAllRatings(studentId, showid)
+			json.NewEncoder(w).Encode(ratings)
+			w.WriteHeader(http.StatusAccepted)
+			// w.Write([]byte("202 - All ratings retrieved"))
+		} else {
+			w.WriteHeader(http.StatusNotAcceptable)
+			w.Write([]byte("No url query or incorrect id value in url query. Please use 1 for true, 0 for false."))
+		}
+
 	}
 	if r.Header.Get("Content-type") == "application/json" {
 		var rating Rating
@@ -194,7 +211,7 @@ func Helper_retrieveName(id string, personArray []Person) string {
 
 // DB function for retrieving all ratings of student
 // returns an array of type Rating of all ratings
-func DB_retrieveAllRatings(receiverId string) []Rating {
+func DB_retrieveAllRatings(receiverId string, showid bool) []Rating {
 	var ratingArray []Rating
 
 	query := fmt.Sprintf(`
@@ -223,9 +240,7 @@ func DB_retrieveAllRatings(receiverId string) []Rating {
 		receiverName := Helper_retrieveName(r.ReceiverId, personArray)
 		r.ReceiverName = receiverName
 
-		if r.Anonymous {
-			r.RaterName = "Anonymous"
-		} else {
+		if showid {
 			switch r.RaterType {
 			case "Student":
 				personArray = studentArray
@@ -234,6 +249,11 @@ func DB_retrieveAllRatings(receiverId string) []Rating {
 			}
 			raterName := Helper_retrieveName(r.RaterId, personArray)
 			r.RaterName = raterName
+		} else {
+			if r.Anonymous {
+				r.RaterId = ""
+				r.RaterName = ""
+			}
 		}
 		ratingArray = append(ratingArray, r)
 	}

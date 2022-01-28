@@ -8,6 +8,7 @@ import { Checkbox, Container, FormControlLabel } from "@mui/material";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import EditIcon from "@mui/icons-material/Edit";
 
 const useStyles = makeStyles({
   commentWidth: {
@@ -34,61 +35,180 @@ const client = axios.create({
   baseURL: `${REACT_APP_STUDENT_COMMENT_URL}`,
 });
 
-var defaultComment = "nil";
-var defaultAnon = false;
-
-const CommentCard = ({ comment, tutorid }) => {
+const CommentCard = ({ comment, tutorid, updateComments }) => {
   const classes = useStyles();
 
-  return (
-    <Card
-      className={classes.commentWidth}
-      sx={{
-        display: "flex",
-        padding: "0 1.5em",
-        borderRadius: "10px",
-        border: 1.5,
-        borderColor: "#999999",
-        alignItems: "center",
-      }}
-      variant="outlined"
-    >
-      <CardContent>
-        <Typography className={classes.inline} variant="h6">
-          {comment.comment}
-        </Typography>
-        <Typography
-          sx={{ fontSize: 18 }}
-          color="text.primary"
-          className={classes.inline}
-        >
-          &nbsp; –&nbsp; {comment.commentorName} ({comment.commentorType})
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Commented on {comment.datetime}
-        </Typography>
-      </CardContent>
-      {comment.commentorId === tutorid && <EditComment comment={comment} />}
-    </Card>
-  );
-};
-
-const commentChanged = (commentDetails) => {
-  commentDetails.anonymous = defaultAnon;
-
-  if (defaultComment == "nil") {
-    client.post(`/${commentDetails.receiverId}`, commentDetails).then((res) => {
-      console.log("comment posted!");
-      console.log(res);
-    });
-  } else {
-    console.log(commentDetails);
-    client.put(`/${commentDetails.receiverId}`, commentDetails).then((res) => {
-      console.log("comment updated!");
-      console.log(res);
-    });
+  if (comment.anonymous) {
+    comment.commentorName = "Anonymous";
   }
-  // window.location.reload(false);
+
+  // hooks for onclick edit button
+  const [editClick, setEditClick] = useState(false);
+
+  const EditComment = () => {
+    const [checked, setChecked] = useState(false);
+    const anonCheckboxChange = (event) => {
+      setChecked(event.target.checked);
+    };
+
+    const EditCommentInputField = () => {
+      // getter and setter for comment
+      const [editedComment, setEditedComment] = useState("");
+      // getter and setter for error
+      const [commentError, setCommentError] = useState(false);
+
+      // comments submit handler
+      const handleEditCommentSubmit = (e) => {
+        setCommentError(false);
+        e.preventDefault();
+
+        // trim whitespaces to validate empty spaces when submitting comment
+        let trimmedComment = editedComment;
+        trimmedComment = trimmedComment.trim();
+        if (trimmedComment != "") {
+          // create update comment object
+          const updatedComment = {
+            id: comment.id,
+            comment: trimmedComment,
+            anonymous: checked,
+          };
+
+          client.put(`/${comment.receiverId}`, updatedComment).then((res) => {
+            console.log(res);
+            if (res.status === 202) {
+              updateComments();
+            }
+          });
+          document.getElementById("editCommentForm").reset();
+          setEditedComment("");
+        } else {
+          setCommentError(true);
+        }
+      };
+      return (
+        <form
+          id="editCommentForm"
+          noValidate
+          autoComplete="off"
+          onSubmit={handleEditCommentSubmit}
+        >
+          <TextField
+            sx={{ width: "420px", paddingBottom: "10px" }}
+            InputProps={{
+              className: classes.input,
+            }}
+            onChange={(e) => setEditedComment(e.target.value)}
+            id="outlined-multiline-static"
+            label="Update Comment"
+            placeholder="Say something nice"
+            multiline
+            rows={1}
+            error={commentError}
+          />
+          <Button
+            sx={{ marginLeft: "10px" }}
+            type="submit"
+            variant="contained"
+            color="success"
+            className={classes.input}
+          >
+            <KeyboardArrowRightIcon />
+          </Button>
+        </form>
+      );
+    };
+
+    return (
+      <Card
+        className={classes.commentWidth}
+        sx={{
+          marginTop: "5px",
+          padding: "0 1.5em",
+          borderRadius: 0,
+          border: 2,
+          borderColor: "#DADADA",
+        }}
+        variant="outlined"
+      >
+        <Typography
+          sx={{
+            fontSize: 20,
+            justifyContent: "center",
+            display: "flex",
+            marginLeft: "10px",
+          }}
+          color="text.secondary"
+        >
+          Edit comment:
+        </Typography>
+        <FormControlLabel
+          sx={{
+            justifyContent: "left",
+            display: "inline-flex",
+            marginLeft: "20px",
+          }}
+          label="Anonymous"
+          labelPlacement="end"
+          control={<Checkbox checked={checked} onChange={anonCheckboxChange} />}
+        />
+        <Container
+          sx={{
+            justifyContent: "center",
+            display: "flex",
+          }}
+        >
+          <EditCommentInputField />
+        </Container>
+      </Card>
+    );
+  };
+
+  return (
+    <>
+      <Card
+        className={classes.commentWidth}
+        sx={{
+          display: "flex",
+          padding: "0 1.5em",
+          borderRadius: "10px",
+          border: 1.5,
+          borderColor: "#999999",
+          alignItems: "center",
+        }}
+        variant="outlined"
+      >
+        <CardContent>
+          <Typography className={classes.inline} variant="h6">
+            {comment.comment}
+          </Typography>
+          <Typography
+            sx={{ fontSize: 18 }}
+            color="text.primary"
+            className={classes.inline}
+          >
+            &nbsp; –&nbsp; {comment.commentorName} ({comment.commentorType})
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Commented on {comment.datetime}
+          </Typography>
+        </CardContent>
+        {comment.commentorId === tutorid && (
+          <Button
+            sx={{
+              marginLeft: "auto",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => setEditClick(!editClick)}
+          >
+            <EditIcon />
+          </Button>
+        )}
+      </Card>
+      {editClick && <EditComment className={classes.inline} />}
+    </>
+  );
 };
 
 const CommentCardEditable = ({
@@ -104,7 +224,6 @@ const CommentCardEditable = ({
 
   const anonCheckboxChange = (event) => {
     setChecked(event.target.checked);
-    defaultAnon = !checked;
   };
 
   return (
@@ -126,7 +245,8 @@ const CommentCardEditable = ({
       <FormControlLabel
         sx={{
           justifyContent: "center",
-          display: "flex",
+          display: "inline-flex",
+          marginLeft: "30px",
         }}
         label="Anonymous"
         labelPlacement="end"
@@ -139,7 +259,6 @@ const CommentCardEditable = ({
           display: "flex",
         }}
       >
-        {/* TODO: comment input field */}
         <CommentInputField
           updateComments={updateComments}
           tutorid={tutorid}
@@ -219,10 +338,6 @@ const CommentInputField = ({ updateComments, tutorid, studentid, anon }) => {
       </Button>
     </form>
   );
-};
-
-const EditComment = ({ comment }) => {
-  return <p>comment id: {comment.id}</p>;
 };
 
 export { CommentCard, CommentCardEditable };

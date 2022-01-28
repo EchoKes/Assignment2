@@ -100,7 +100,7 @@ const StudentRating = ({ studentid, tutorid }) => {
 
   const [ratingsArray, setRatingsArray] = useState([]);
   const retrieveRating = () => {
-    clientRating.get(`/${studentid}`).then((res) => {
+    clientRating.get(`/${studentid}?showid=1`).then((res) => {
       console.log(res.data);
       setRatingsArray(res.data);
     });
@@ -160,7 +160,7 @@ const StudentComment = ({ receivername, studentid, tutorid }) => {
   const [commentsArray, setCommentsArray] = useState([]);
   // api call to retrieve all comments of a student
   const retrieveComments = () => {
-    clientComment.get(`/${studentid}`).then((res) => {
+    clientComment.get(`/${studentid}?showid=1`).then((res) => {
       console.log(res.data);
       setCommentsArray(res.data);
     });
@@ -200,7 +200,11 @@ const StudentComment = ({ receivername, studentid, tutorid }) => {
         {commentsArray.map((comment) => {
           return (
             <Grid container className={classes.center} key={comment.id}>
-              <CommentCard comment={comment} tutorid={tutorid} />
+              <CommentCard
+                comment={comment}
+                tutorid={tutorid}
+                updateComments={retrieveComments}
+              />
             </Grid>
           );
         })}
