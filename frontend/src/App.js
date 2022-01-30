@@ -15,9 +15,10 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import StarIcon from "@mui/icons-material/Star";
 import CommentIcon from "@mui/icons-material/Comment";
 
+// retrieve id from authentication package 3.1
+localStorage.setItem("tutorid", "T01234567A");
+
 function App() {
-  // retrieve id from authentication package 3.1
-  localStorage.setItem("tutorid", "T01234567A");
   return (
     <Router>
       <Navbar>

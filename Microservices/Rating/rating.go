@@ -68,21 +68,18 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			w.Write([]byte("422 - Please enter account details in JSON format"))
 		}
-		ratingScore := DB_retrieveSingleRating(rating) // TODO: change sql query to exec
 
 		// {Part 2: Rate a student}
 		if r.Method == "POST" {
-			// TODO: remove if condition
-			if ratingScore < 0 {
-				// Create tutor's rating for student
-				if DB_insertRating(rating) {
-					w.WriteHeader(http.StatusCreated)
-					w.Write([]byte("201 - Rating created"))
-				} else {
-					w.WriteHeader(http.StatusBadRequest)
-					w.Write([]byte("400 - Unable to create rating"))
-				}
+			// Create tutor's rating for student
+			if DB_insertRating(rating) {
+				w.WriteHeader(http.StatusCreated)
+				w.Write([]byte("201 - Rating created"))
+			} else {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte("400 - Unable to create rating"))
 			}
+
 		}
 		// {Part 3: Update rating on a student}
 		if r.Method == "PUT" {
@@ -96,30 +93,6 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 			}
 
 		}
-	}
-}
-
-// Get all ratings received
-func ratingsReceived(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		params := mux.Vars(r)
-		tutorId := params["tutorid"]
-		ratings := DB_retrieveReceivedRatings(tutorId)
-		json.NewEncoder(w).Encode(ratings)
-		w.WriteHeader(http.StatusAccepted)
-		// w.Write([]byte("202 - All received ratings retrieved"))
-	}
-}
-
-// Get all anonymized ratings
-func anonRatings(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		params := mux.Vars(r)
-		tutorId := params["tutorid"]
-		ratings := DB_retrieveAnonRatings(tutorId)
-		json.NewEncoder(w).Encode(ratings)
-		w.WriteHeader(http.StatusAccepted)
-		// w.Write([]byte("202 - All anonymous ratings retrieved"))
 	}
 }
 
@@ -176,29 +149,6 @@ func DB_retrieveAllRatings(receiverId string, showid bool) []Rating {
 	return ratingArray
 }
 
-// DB function for retrieving tutor's rating on a student
-// returns an integer value of rating score; -1 for no rating.
-func DB_retrieveSingleRating(rating Rating) int {
-	tutorId := rating.RaterId
-	studentId := rating.ReceiverId
-	ratingNum := -1
-
-	query := fmt.Sprintf(
-		`SELECT Rating FROM Ratings 
-		 WHERE RaterId = '%s' AND ReceiverId = '%s';`, tutorId, studentId)
-	res, err := db.Query(query)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	if res.Next() {
-		res.Scan(&ratingNum)
-	}
-
-	return ratingNum
-}
-
 // DB function for tutor rating a student, AKA creation of rating
 // returns true if insert is successful
 func DB_insertRating(rating Rating) bool {
@@ -230,49 +180,6 @@ func DB_updateRating(rating Rating) bool {
 
 	rows, _ := res.RowsAffected()
 	return rows == 1
-}
-
-// DB function for retrieving all received ratings of tutor
-// returns an array of type Rating of all received ratings
-func DB_retrieveReceivedRatings(tutorId string) []Rating {
-	var ratingArray []Rating
-
-	query := fmt.Sprintln(`SELECT * FROM Ratings WHERE receiverId = '%s';`, tutorId)
-	res, err := db.Query(query)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	for res.Next() {
-		var r Rating
-		res.Scan(&r.Id, &r.Rating, &r.RaterId, &r.RaterType, &r.ReceiverId, &r.ReceiverType, &r.PublishedDatetime, &r.Anonymous)
-		ratingArray = append(ratingArray, r)
-	}
-
-	return ratingArray
-}
-
-// DB function for retrieving all anonymous ratings of tutor
-// returns an array of type Rating of all anonymous ratings
-func DB_retrieveAnonRatings(tutorId string) []Rating {
-	var ratingArray []Rating
-
-	query := fmt.Sprintf(
-		`SELECT * FROM Ratings WHERE receiverId = '%s' AND anonymous = true;`, tutorId)
-	res, err := db.Query(query)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	for res.Next() {
-		var r Rating
-		res.Scan(&r.Id, &r.Rating, &r.RaterId, &r.RaterType, &r.ReceiverId, &r.ReceiverType, &r.PublishedDatetime, &r.Anonymous)
-		ratingArray = append(ratingArray, r)
-	}
-
-	return ratingArray
 }
 
 // DB function for retrieving all of tutor's given ratings
@@ -333,8 +240,6 @@ func main() {
 	// setup routers
 	router.HandleFunc("/landing", landing)
 	router.HandleFunc(BASE_STUDENT_API_URL, allRatings).Methods("GET", "POST", "PUT")
-	router.HandleFunc(BASE_TUTOR_API_URL+"/received", ratingsReceived).Methods("GET")
-	router.HandleFunc(BASE_TUTOR_API_URL+"/anon", anonRatings).Methods("GET")
 	router.HandleFunc(BASE_TUTOR_API_URL+"/given", givenRatings).Methods("GET")
 	router.HandleFunc(BASE_STUDENT_API_URL+"/from/{tutorid}", ratingFromTutor).Methods("GET")
 

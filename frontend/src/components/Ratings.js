@@ -42,6 +42,7 @@ const RatingCard = ({ rating }) => {
 
   return (
     <Card
+      id="ratingCard"
       className={classes.ratingWidth}
       sx={{
         display: "flex",
@@ -50,6 +51,10 @@ const RatingCard = ({ rating }) => {
         border: 1.5,
         borderColor: "#999999",
         alignItems: "center",
+        "@keyframes highlight": {
+          from: { borderColor: "#00FF00" },
+        },
+        transition: "highlight 2s",
       }}
       variant="outlined"
     >
@@ -96,6 +101,12 @@ const ratingChanged = ({ updateRating, rating }) => {
       console.log(res);
       if (res.status === 202) {
         updateRating();
+        const ratingCard = document.getElementById("ratingCard");
+        ratingCard.style.setProperty(
+          "@keyframes highlight",
+          'from: {borderColor: "#00FF00"}'
+        );
+        ratingCard.style.animation = "highlight 2s";
       }
     });
   }
@@ -162,4 +173,86 @@ const RatingCardEditable = ({ updateRating, rating }) => {
   );
 };
 
-export { RatingCard, RatingCardEditable };
+const RatingUpdateCard = ({ updateRating, rating }) => {
+  const classes = useStyles();
+  defaultRating = rating.rating;
+  let anony = rating.anonymous;
+
+  const [checked, setChecked] = useState(anony);
+
+  const anonCheckboxChange = (event) => {
+    setChecked(event.target.checked);
+    defaultAnon = !checked;
+  };
+
+  return (
+    <Card
+      id="ratingCard"
+      className={classes.ratingWidth}
+      sx={{
+        padding: "0 1.5em",
+        borderRadius: "10px",
+        border: 1.5,
+        borderColor: "#999999",
+        alignItems: "center",
+      }}
+      variant="outlined"
+    >
+      <CardContent>
+        <Typography
+          sx={{
+            fontSize: 20,
+            marginLeft: "auto",
+            display: "flex",
+          }}
+          color="text.primary"
+        >
+          {rating.receiverName}
+        </Typography>
+
+        <Container
+          disableGutters={true}
+          sx={{
+            display: "flex",
+          }}
+        >
+          <FormControlLabel
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: "10px",
+            }}
+            label="Anonymous"
+            labelPlacement="end"
+            control={
+              <Checkbox checked={checked} onChange={anonCheckboxChange} />
+            }
+          />
+          <ReactStars
+            onChange={(newRating) => {
+              rating.rating = newRating;
+              rating.anonymous = checked;
+              ratingChanged({ updateRating, rating });
+            }}
+            value={rating.rating}
+            count={5}
+            size={40}
+            half={false}
+            color1={"#C7C7C7"}
+            color2={"#FDCC0D"}
+          />
+        </Container>
+        <Typography
+          sx={{ display: "inline-flex", justifyContent: "center" }}
+          variant="body2"
+          color="text.secondary"
+        >
+          Rated {rating.rating} stars on {rating.datetime}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+};
+
+export { RatingCard, RatingCardEditable, RatingUpdateCard };

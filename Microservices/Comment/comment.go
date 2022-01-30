@@ -97,30 +97,6 @@ func allComments(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Get all comments received
-func commentsReceived(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		params := mux.Vars(r)
-		tutorId := params["tutorid"]
-		comments := DB_retrieveReceivedComments(tutorId)
-		json.NewEncoder(w).Encode(comments)
-		w.WriteHeader(http.StatusAccepted)
-		// w.Write([]byte("202 - All received comments retrieved"))
-	}
-}
-
-// Get all anonymized comments
-func anonComments(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		params := mux.Vars(r)
-		tutorId := params["tutorid"]
-		comments := DB_retrieveAnonComments(tutorId)
-		json.NewEncoder(w).Encode(comments)
-		w.WriteHeader(http.StatusAccepted)
-		// w.Write([]byte("202 - All anonymous comments retrieved"))
-	}
-}
-
 // View all given comments
 func givenComments(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
@@ -208,49 +184,6 @@ func DB_updateComment(comment Comment) bool {
 	return rows == 1
 }
 
-// DB function for retrieving all received comments of tutor
-// returns an array of type Comment of all received comments
-func DB_retrieveReceivedComments(tutorId string) []Comment {
-	var commentArray []Comment
-
-	query := fmt.Sprintln(`SELECT * FROM Comments WHERE receiverId = '%s';`, tutorId)
-	res, err := db.Query(query)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	for res.Next() {
-		var c Comment
-		res.Scan(&c.Id, &c.CommentDesc, &c.CommentorId, &c.CommentorType, &c.ReceiverId, &c.ReceiverType, &c.PublishedDatetime, &c.Anonymous)
-		commentArray = append(commentArray, c)
-	}
-
-	return commentArray
-}
-
-// DB function for retrieving all anonymous comments of tutor
-// returns an array of type Comment of all anonymous comments
-func DB_retrieveAnonComments(tutorId string) []Comment {
-	var commentArray []Comment
-
-	query := fmt.Sprintf(
-		`SELECT * FROM Comments WHERE receiverId = '%s' AND anonymous = true;`, tutorId)
-	res, err := db.Query(query)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	for res.Next() {
-		var c Comment
-		res.Scan(&c.Id, &c.CommentDesc, &c.CommentorId, &c.CommentorType, &c.ReceiverId, &c.ReceiverType, &c.PublishedDatetime, &c.Anonymous)
-		commentArray = append(commentArray, c)
-	}
-
-	return commentArray
-}
-
 // DB function for retrieving all of tutor's given comments
 // returns an array of type Comment of all tutor's given comments
 func DB_retrieveGivenComments(tutorId string) []Comment {
@@ -311,8 +244,6 @@ func main() {
 	// setup routers
 	router.HandleFunc("/landing", landing)
 	router.HandleFunc(BASE_STUDENT_API_URL, allComments).Methods("GET", "POST", "PUT")
-	router.HandleFunc(BASE_TUTOR_API_URL+"/received", commentsReceived).Methods("GET")
-	router.HandleFunc(BASE_TUTOR_API_URL+"/anon", anonComments).Methods("GET")
 	router.HandleFunc(BASE_TUTOR_API_URL+"/given", givenComments).Methods("GET")
 	router.HandleFunc(BASE_STUDENT_API_URL+"/from/{tutorid}", commentsFromTutor).Methods("GET")
 

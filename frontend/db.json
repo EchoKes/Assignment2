@@ -56,6 +56,28 @@
             "dateTime": "2022-01-28 03:40:13",
             "anonymous": true
         }
+        
+    ],
+
+    "tutors_ratings": [
+        {
+            "id": 3,
+            "rating": 5,
+            "studentId": "S56789101C",
+            "target": "tutor",
+            "targetId": "T01234567A",
+            "dateTime": "2022-01-30 13:40:13",
+            "anonymous": false
+        },
+        {
+            "id": 4,
+            "rating": 4,
+            "studentId": "",
+            "target": "tutor",
+            "targetId": "T01234567A",
+            "dateTime": "2022-01-30 14:40:13",
+            "anonymous": true
+        }
     ],
 
     "students_comments": [
@@ -74,6 +96,27 @@
             "studentId": "",
             "target": "student",
             "targetId": "S01234567A",
+            "dateTime": "2022-01-28 03:40:13",
+            "anonymous": true
+        }
+    ],
+
+    "tutors_comments" : [
+        {
+            "id": 3,
+            "comment": "Great teaching.",
+            "studentId": "S01234567A",
+            "target": "tutor",
+            "targetId": "T01234567A",
+            "dateTime": "2022-01-28 03:40:13",
+            "anonymous": false
+        },
+        {
+            "id": 4,
+            "comment": "Excellent explanations!",
+            "studentId": "",
+            "target": "tutor",
+            "targetId": "T01234567A",
             "dateTime": "2022-01-28 03:40:13",
             "anonymous": true
         }

@@ -31,8 +31,8 @@ const useStyles = makeStyles({
 const {
   REACT_APP_STUDENT_RATING_URL,
   REACT_APP_STUDENT_COMMENT_URL,
-  REACT_APP_RATINGSFROMSTUDENT_URL,
-  REACT_APP_COMMENTSFROMSTUDENT_URL,
+  REACT_APP_STUDENTRATINGSFROMSTUDENT_URL,
+  REACT_APP_STUDENTCOMMENTSFROMSTUDENT_URL,
   REACT_APP_ALLSTUDENTS_URL,
   REACT_APP_ALLTUTORS_URL,
 } = process.env;
@@ -46,11 +46,11 @@ const clientComment = axios.create({
 });
 
 const clientSRating = axios.create({
-  baseURL: `${REACT_APP_RATINGSFROMSTUDENT_URL}`,
+  baseURL: `${REACT_APP_STUDENTRATINGSFROMSTUDENT_URL}`,
 });
 
 const clientSComment = axios.create({
-  baseURL: `${REACT_APP_COMMENTSFROMSTUDENT_URL}`,
+  baseURL: `${REACT_APP_STUDENTCOMMENTSFROMSTUDENT_URL}`,
 });
 
 const studentClient = axios.create({

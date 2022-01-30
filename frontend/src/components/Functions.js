@@ -53,6 +53,14 @@ const getPerson = (id, arr) => {
   return name;
 };
 
+const extractAnon = (arr) => {
+  let extract = [];
+  arr.map((obj) => {
+    if (obj["anonymous"]) extract.push(obj);
+  });
+  return extract;
+};
+
 const parseRatings = (arr) => {
   let modifiedArr = arr.map((obj) => {
     return {
@@ -85,4 +93,11 @@ const parseComments = (arr) => {
   return modifiedArr;
 };
 
-export { parseRatings, parseComments, addName, getPerson, sortCombinedArray };
+export {
+  parseRatings,
+  parseComments,
+  addName,
+  getPerson,
+  extractAnon,
+  sortCombinedArray,
+};

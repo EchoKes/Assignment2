@@ -35,7 +35,7 @@ const client = axios.create({
   baseURL: `${REACT_APP_STUDENT_COMMENT_URL}`,
 });
 
-const CommentCard = ({ comment, tutorid, updateComments }) => {
+const CommentCard = ({ comment, tutorid, updateComments, personal }) => {
   const classes = useStyles();
 
   // hooks for onclick edit button
@@ -174,16 +174,24 @@ const CommentCard = ({ comment, tutorid, updateComments }) => {
         variant="outlined"
       >
         <CardContent>
+          {typeof personal === "boolean" && (
+            <Typography sx={{ fontSize: 20 }} color="text.primary">
+              {comment.receiverName}
+            </Typography>
+          )}
+
           <Typography className={classes.inline} variant="h6">
             {comment.comment}
           </Typography>
-          <Typography
-            sx={{ fontSize: 18 }}
-            color="text.primary"
-            className={classes.inline}
-          >
-            &nbsp; –&nbsp; {comment.commentorName} ({comment.commentorType})
-          </Typography>
+          {typeof personal === "undefined" && (
+            <Typography
+              sx={{ fontSize: 18 }}
+              color="text.primary"
+              className={classes.inline}
+            >
+              &nbsp; –&nbsp; {comment.commentorName} ({comment.commentorType})
+            </Typography>
+          )}
           <Typography variant="body2" color="text.secondary">
             Commented on {comment.datetime}
           </Typography>
