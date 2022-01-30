@@ -5,15 +5,16 @@ import { Container, Grid } from "@mui/material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import axios from "axios";
+import { RatingCard, RatingCardEditable } from "../components/Ratings";
+import { CommentCard, CommentCardEditable } from "../components/Comments";
+import HeadingCard from "../components/Heading";
 import {
-  RatingCard,
-  RatingCardEditable,
-} from "../components/RatingCardComponent";
-import {
-  CommentCard,
-  CommentCardEditable,
-} from "../components/CommentCardComponent";
-import HeadingCard from "../components/HeadingComponent";
+  parseComments,
+  parseRatings,
+  addName,
+  getPerson,
+  sortCombinedArray,
+} from "../components/Functions";
 
 const useStyles = makeStyles({
   center: {
@@ -27,8 +28,14 @@ const useStyles = makeStyles({
   },
 });
 
-const { REACT_APP_STUDENT_RATING_URL, REACT_APP_STUDENT_COMMENT_URL } =
-  process.env;
+const {
+  REACT_APP_STUDENT_RATING_URL,
+  REACT_APP_STUDENT_COMMENT_URL,
+  REACT_APP_RATINGSFROMSTUDENT_URL,
+  REACT_APP_COMMENTSFROMSTUDENT_URL,
+  REACT_APP_ALLSTUDENTS_URL,
+  REACT_APP_ALLTUTORS_URL,
+} = process.env;
 
 const clientRating = axios.create({
   baseURL: `${REACT_APP_STUDENT_RATING_URL}`,
@@ -36,6 +43,21 @@ const clientRating = axios.create({
 
 const clientComment = axios.create({
   baseURL: `${REACT_APP_STUDENT_COMMENT_URL}`,
+});
+
+const clientSRating = axios.create({
+  baseURL: `${REACT_APP_RATINGSFROMSTUDENT_URL}`,
+});
+
+const clientSComment = axios.create({
+  baseURL: `${REACT_APP_COMMENTSFROMSTUDENT_URL}`,
+});
+
+const studentClient = axios.create({
+  baseURL: REACT_APP_ALLSTUDENTS_URL,
+});
+const tutorClient = axios.create({
+  baseURL: REACT_APP_ALLTUTORS_URL,
 });
 
 // main function including tabs
@@ -47,17 +69,15 @@ const StudentDetails = () => {
   // get tutorid from localStorage
   const tutorid = localStorage.getItem("tutorid");
 
-  // get tutor's rating for student
-  // this hook has to be used here before calling the student rating
-  const [ratingFromTutor, setRatingFromTutor] = useState(() => {
-    return "";
-  });
-
+  // get student details
+  const [studentName, setStudentName] = useState("undefined");
+  const retrieveName = async () => {
+    const studentArr = await studentClient.get();
+    let name = getPerson(studentid, studentArr.data);
+    setStudentName(name);
+  };
   React.useEffect(() => {
-    clientRating.get(`/${studentid}/from/${tutorid}`).then((res) => {
-      console.log("initial rating details from tutor retrieved.");
-      setRatingFromTutor(res.data);
-    });
+    retrieveName();
   }, []);
 
   // get current tab's value
@@ -72,7 +92,7 @@ const StudentDetails = () => {
     <>
       <Container className={classes.container}>
         <Grid className={classes.center}>
-          <HeadingCard name={ratingFromTutor.receiverName} />
+          <HeadingCard name={studentName} />
         </Grid>
       </Container>
 
@@ -85,7 +105,7 @@ const StudentDetails = () => {
       )}
       {tabValue === 1 && (
         <StudentComment
-          receivername={ratingFromTutor.receiverName}
+          receivername={studentName}
           studentid={studentid}
           tutorid={tutorid}
         />
@@ -99,22 +119,35 @@ const StudentRating = ({ studentid, tutorid }) => {
   const classes = useStyles();
 
   const [ratingsArray, setRatingsArray] = useState([]);
-  const retrieveRating = () => {
-    clientRating.get(`/${studentid}?showid=1`).then((res) => {
-      console.log(res.data);
-      setRatingsArray(res.data);
-    });
+  // api call to retrieve all comments of a student
+  const retrieveRating = async () => {
+    const tRes = await clientRating.get(`/${studentid}?showid=1`);
+    const studentArr = await studentClient.get();
+    const tutorArr = await tutorClient.get();
+
+    // retrieve all students and tutors
+    let modified_tRes = addName(tRes.data, tutorArr.data, "rating");
+    // call 3.9 package here
+    const sRes = await clientSRating.get();
+    let modified_sRes = parseRatings(sRes.data);
+    let modified_sRes2 = addName(modified_sRes, studentArr.data, "rating");
+
+    let combinedArray = sortCombinedArray(modified_tRes, modified_sRes2);
+    console.log(combinedArray);
+    setRatingsArray(combinedArray);
   };
+
   React.useEffect(() => {
     retrieveRating();
   }, []);
 
   const [ratingFromTutor, setRatingFromTutor] = useState(""); // api student's rating from tutor
-  const retrieveRatingFromTutor = () => {
-    clientRating.get(`/${studentid}/from/${tutorid}`).then((res) => {
-      console.log("rating from tutor retrieved.");
-      setRatingFromTutor(res.data);
-    });
+  const retrieveRatingFromTutor = async () => {
+    const rating = await clientRating.get(`/${studentid}/from/${tutorid}`);
+    const studentArr = await studentClient.get();
+    let name = getPerson(studentid, studentArr.data);
+    rating.data["receiverName"] = name;
+    setRatingFromTutor(rating.data);
   };
   React.useEffect(() => {
     retrieveRatingFromTutor();
@@ -137,7 +170,7 @@ const StudentRating = ({ studentid, tutorid }) => {
       <Container className={classes.container}>
         {ratingsArray.map((rating) => {
           return (
-            <Grid container className={classes.center} key={rating.id}>
+            <Grid container className={classes.center} key={rating.raterId}>
               <RatingCard rating={rating} />
             </Grid>
           );
@@ -156,29 +189,29 @@ const StudentRating = ({ studentid, tutorid }) => {
 // function for getting comment of student from api
 const StudentComment = ({ receivername, studentid, tutorid }) => {
   const classes = useStyles();
-
   const [commentsArray, setCommentsArray] = useState([]);
+
   // api call to retrieve all comments of a student
-  const retrieveComments = () => {
-    clientComment.get(`/${studentid}?showid=1`).then((res) => {
-      console.log(res.data);
-      setCommentsArray(res.data);
-    });
+  const retrieveComments = async () => {
+    const tRes = await clientComment.get(`/${studentid}?showid=1`);
+    const studentArr = await studentClient.get();
+    const tutorArr = await tutorClient.get();
+
+    // retrieve all students and tutors
+    let modified_tRes = addName(tRes.data, tutorArr.data, "comment");
+    // call 3.9 package here
+    const sRes = await clientSComment.get();
+    let modified_sRes = parseComments(sRes.data);
+    let modified_sRes2 = addName(modified_sRes, studentArr.data, "comment");
+
+    let combinedArray = sortCombinedArray(modified_tRes, modified_sRes2);
+    console.log(combinedArray);
+    setCommentsArray(combinedArray);
   };
+
   React.useEffect(() => {
     retrieveComments();
   }, []);
-
-  // const [commentFromTutor, setCommentFromTutor] = useState([]);
-  // const retrieveCommentFromTutor = () => {
-  //   clientComment.get(`/${studentid}/${tutorid}`).then((res) => {
-  //     console.log("comment from tutor retrieved.");
-  //     setCommentFromTutor(res.data);
-  //   });
-  // };
-  // React.useEffect(() => {
-  //   retrieveCommentFromTutor();
-  // }, []);
 
   if (!commentsArray) {
     return (
@@ -197,9 +230,9 @@ const StudentComment = ({ receivername, studentid, tutorid }) => {
   } else {
     return (
       <Container className={classes.container}>
-        {commentsArray.map((comment) => {
+        {commentsArray.map((comment, index) => {
           return (
-            <Grid container className={classes.center} key={comment.id}>
+            <Grid container className={classes.center} key={index}>
               <CommentCard
                 comment={comment}
                 tutorid={tutorid}

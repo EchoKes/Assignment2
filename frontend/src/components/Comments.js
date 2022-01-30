@@ -38,10 +38,6 @@ const client = axios.create({
 const CommentCard = ({ comment, tutorid, updateComments }) => {
   const classes = useStyles();
 
-  if (comment.anonymous) {
-    comment.commentorName = "Anonymous";
-  }
-
   // hooks for onclick edit button
   const [editClick, setEditClick] = useState(false);
 
@@ -65,7 +61,7 @@ const CommentCard = ({ comment, tutorid, updateComments }) => {
         // trim whitespaces to validate empty spaces when submitting comment
         let trimmedComment = editedComment;
         trimmedComment = trimmedComment.trim();
-        if (trimmedComment != "") {
+        if (trimmedComment !== "") {
           // create update comment object
           const updatedComment = {
             id: comment.id,
@@ -286,7 +282,7 @@ const CommentInputField = ({ updateComments, tutorid, studentid, anon }) => {
     // trim whitespaces to validate empty spaces when submitting comment
     let trimmedComment = comment;
     trimmedComment = trimmedComment.trim();
-    if (trimmedComment != "") {
+    if (trimmedComment !== "") {
       // create new comment object
       const newComment = {
         comment: trimmedComment,

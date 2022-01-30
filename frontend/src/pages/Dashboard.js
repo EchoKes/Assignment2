@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import StudentCard from "../components/StudentCardComponent";
+import StudentCard from "../components/Students";
 import { Grid, Container } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
@@ -17,12 +17,10 @@ const client = axios.create({
 });
 
 const Dashboard = () => {
-  // EXPERIMENTAL
-  localStorage.setItem("tutorid", "g8m1ce47c43blq0n");
   // reference style
   const classes = useStyles();
   // create states
-  const [studentArray, setStudentArray] = useState(null); // api student details
+  const [studentArray, setStudentArray] = useState([]); // api student details
 
   React.useEffect(() => {
     client.get("").then((res) => {

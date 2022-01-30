@@ -9,10 +9,10 @@ services:
       dockerfile: ratingDB.Dockerfile
     # image: 18-rating_db_image
     environment:
-      MYSQL_TCP_PORT: 8185
+      MYSQL_TCP_PORT: 8183
       MYSQL_ROOT_PASSWORD: "password"
     ports:
-      - 8185:3306
+      - 8183:3306
     # deploy:
     #   restart_policy:
     #     condition: on-failure
@@ -28,10 +28,10 @@ services:
       dockerfile: commentDB.Dockerfile
     # image: 18-comment_db_image
     environment:
-      MYSQL_TCP_PORT: 8186
+      MYSQL_TCP_PORT: 8184
       MYSQL_ROOT_PASSWORD: "password"
     ports:
-      - 8186:3306
+      - 8184:3306
     # deploy:
     #   restart_policy:
     #     condition: on-failure
@@ -39,56 +39,15 @@ services:
       - comment_data:/var/lib/mysql
     networks:
       - assignment2bridge
-# Student database
-  db_student:
-    container_name: "18-db_student"
-    build:
-      context: ./Database
-      dockerfile: studentDB.Dockerfile
-    # image: 18-student_db_image
-    environment:
-      MYSQL_TCP_PORT: 8187
-      MYSQL_ROOT_PASSWORD: "password"
-    ports:
-      - 8187:3306
-    # deploy:
-    #   restart_policy:
-    #     condition: on-failure
-    volumes:
-      - student_data:/var/lib/mysql
-    networks:
-      - assignment2bridge
-  # Tutor databse
-  db_tutor:
-    container_name: "18-db_tutor"
-    build:
-      context: ./Database
-      dockerfile: tutorDB.Dockerfile
-    # image: 18-tutor_db_image
-    environment:
-      MYSQL_TCP_PORT: 8188
-      MYSQL_ROOT_PASSWORD: "password"
-    ports:
-      - 8188:3306
-    # deploy:
-    #   restart_policy:
-    #     condition: on-failure
-    volumes:
-      - tutor_data:/var/lib/mysql
-    networks:
-      - assignment2bridge
+
   # # Frontend server
   # frontend:
   #   container_name: 18-frontend_react
   #   depends_on:
   #     - ms_rating
   #     - ms_comment
-  #     - ms_student
-  #     - ms_tutor
   #     - db_rating
   #     - db_comment
-  #     - db_student
-  #     - db_tutor
   #   build:
   #     context: ./frontend
   #     dockerfile: frontend.Dockerfile
@@ -147,39 +106,9 @@ services:
     networks:
       - assignment2bridge
 
-  # Student Mocked Microservice
-  ms_student:
-    depends_on:
-      - db_student
-    build:
-      context: ./Microservices/Student
-      dockerfile: student.Dockerfile
-    image: 18-student_ms_image
-    container_name: 18-ms_student
-    ports:
-      - 8183:8183
-    networks:
-      - assignment2bridge
-      
-  # Tutor Mocked Microservice
-  ms_tutor:
-    depends_on:
-      - db_tutor
-    build:
-      context: ./Microservices/Tutor
-      dockerfile: tutor.Dockerfile
-    # image: 18-tutor_ms_image
-    container_name: 18-ms_tutor
-    ports:
-      - 8184:8184
-    networks:
-      - assignment2bridge
-
 volumes:
   rating_data: null
   comment_data: null
-  student_data: null
-  tutor_data: null
   # node_modules: null
 
 networks:

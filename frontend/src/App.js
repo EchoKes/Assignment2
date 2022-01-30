@@ -1,7 +1,14 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import React, { useState } from "react";
 import Dashboard from "./pages/Dashboard";
 import { StudentDetails } from "./pages/StudentDetails";
+import { TutorRatings } from "./pages/TutorRatings";
+import { TutorComments } from "./pages/TutorComments";
 import ErrorPage from "./pages/ErrorPage";
 import GridViewIcon from "@mui/icons-material/GridView";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
@@ -9,27 +16,25 @@ import StarIcon from "@mui/icons-material/Star";
 import CommentIcon from "@mui/icons-material/Comment";
 
 function App() {
+  // retrieve id from authentication package 3.1
+  localStorage.setItem("tutorid", "T01234567A");
   return (
-    <>
+    <Router>
       <Navbar>
         <NavItem location={"/dashboard"} icon={<GridViewIcon />} />
         <NavItem icon={<AccountBoxIcon />}>
           <DropDownMenu />
         </NavItem>
       </Navbar>
-      <Router>
-        {/* <nav>
-        <Link to="dashboard">Dashboard</Link>
-        <Link to="personal">Personal</Link>
-      </nav> */}
-        <Routes>
-          <Route path="/" />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/:studentid" element={<StudentDetails />} />
-          <Route path="*" element={<ErrorPage />} />
-        </Routes>
-      </Router>
-    </>
+      <Routes>
+        <Route path="/" />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/:studentid" element={<StudentDetails />} />
+        <Route path="/personal/ratings/:tutorid" element={<TutorRatings />} />
+        <Route path="/personal/comments/:tutorid" element={<TutorComments />} />
+        <Route path="*" element={<ErrorPage />} />
+      </Routes>
+    </Router>
   );
 }
 
@@ -60,20 +65,31 @@ const NavItem = (props) => {
 };
 
 const DropDownMenu = () => {
+  const tutorid = localStorage.getItem("tutorid");
+  const navigate = useNavigate();
   const DropDownItem = (props) => {
     return (
-      <span href={props.location} className="menu-item">
+      <span onClick={() => navigate(props.location)} className="menu-item">
         <span className="icon-button">{props.leftIcon}</span>
-        {props.children}
-        <span className="icon-right">{props.rightIcon}</span>
+        &nbsp;&nbsp;{props.children}
       </span>
     );
   };
 
   return (
     <div className="dropdown">
-      <DropDownItem leftIcon={<StarIcon />}>My Ratings</DropDownItem>
-      <DropDownItem leftIcon={<CommentIcon />}>My Comments</DropDownItem>
+      <DropDownItem
+        location={`/personal/ratings/${tutorid}`}
+        leftIcon={<StarIcon />}
+      >
+        My Ratings
+      </DropDownItem>
+      <DropDownItem
+        location={`/personal/comments/${tutorid}`}
+        leftIcon={<CommentIcon />}
+      >
+        My Comments
+      </DropDownItem>
     </div>
   );
 };

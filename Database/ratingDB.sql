@@ -10,9 +10,9 @@ CREATE TABLE Ratings
 (
     id INT AUTO_INCREMENT PRIMARY KEY,
     rating TINYINT(1),
-    raterId VARCHAR(45),
+    raterId VARCHAR(10),
     raterType VARCHAR(20),
-    receiverId VARCHAR(45),
+    receiverId VARCHAR(10),
     receiverType VARCHAR(20),
     datetime DATETIME,
     anonymous TINYINT(0) DEFAULT 0
@@ -20,17 +20,11 @@ CREATE TABLE Ratings
 
 INSERT INTO Ratings(rating, raterId, raterType, receiverId, receiverType, datetime, anonymous) 
 VALUES
-(4, "fwna55ir8hqo57xl", "Student", "zv04w3y2tlcn5hj1", "Student", NOW(), false),
-(5, "9e8uqiz7xat21opf", "Student", "zv04w3y2tlcn5hj1", "Student", NOW(), false),
-(4, "w8zuzvgadqbuift3", "Student", "zv04w3y2tlcn5hj1", "Student", NOW(), true),
-(4, "g8m1ce47c43blq0n", "Tutor", "zv04w3y2tlcn5hj1", "Student", NOW(), false),
+(4, "T01234567A", "tutor", "S01234567A", "student", NOW(), false),
+(5, "T12345678B", "tutor", "S01234567A", "student", NOW(), true),
 
-(3, "9e8uqiz7xat21opf", "Student", "fwna55ir8hqo57xl", "Student", NOW(), false),
-(5, "w8zuzvgadqbuift3", "Student", "fwna55ir8hqo57xl", "Student", NOW(), false),
-(3, "zv04w3y2tlcn5hj1", "Student", "fwna55ir8hqo57xl", "Student", NOW(), true),
-(4, "g8m1ce47c43blq0n", "Tutor", "fwna55ir8hqo57xl", "Student", NOW(), false),
+(4, "T01234567A", "tutor", "S12345678B", "student", NOW(), true),
+(5, "T12345678B", "tutor", "S12345678B", "student", NOW(), false),
 
-(5, "zv04w3y2tlcn5hj1", "Student", "9e8uqiz7xat21opf", "Student", NOW(), false),
-(5, "w8zuzvgadqbuift3", "Student", "9e8uqiz7xat21opf", "Student", NOW(), false),
-(4, "fwna55ir8hqo57xl", "Student", "9e8uqiz7xat21opf", "Student", NOW(), true),
-(4, "g8m1ce47c43blq0n", "Tutor", "9e8uqiz7xat21opf", "Student", NOW(), false);
+(4, "T01234567A", "tutor", "S23456789C", "student", NOW(), false),
+(5, "T12345678B", "tutor", "S23456789C", "student", NOW(), true);

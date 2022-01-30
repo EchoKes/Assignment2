@@ -16,27 +16,17 @@ import (
 )
 
 type Comment struct {
-	Id                string `json:"id"`
+	Id                int    `json:"id"`
 	CommentDesc       string `json:"comment"`
 	CommentorId       string `json:"commentorId"`
-	CommentorName     string `json:"commentorName"`
 	CommentorType     string `json:"commentorType"`
 	ReceiverId        string `json:"receiverId"`
-	ReceiverName      string `json:"receiverName"`
 	ReceiverType      string `json:"receiverType"`
 	PublishedDatetime string `json:"datetime"`
 	Anonymous         bool   `json:"anonymous"`
 }
 
-type Person struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-}
-
 var db *sql.DB
-
-const student_url = "http://ms_student:8183/students"
-const tutor_url = "http://ms_tutor:8184/tutors"
 
 func landing(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "~ Ratings & Comments Dashboard ~")
@@ -68,8 +58,8 @@ func allComments(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotAcceptable)
 			w.Write([]byte("No url query or incorrect id value in url query. Please use 1 for true, 0 for false."))
 		}
-
 	}
+
 	if r.Header.Get("Content-type") == "application/json" {
 		var comment Comment
 		regBody, err := ioutil.ReadAll(r.Body)
@@ -143,24 +133,6 @@ func givenComments(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func allStudents(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		studentArray := MS_getAllPersons(student_url)
-		json.NewEncoder(w).Encode(studentArray)
-		w.WriteHeader(http.StatusAccepted)
-		// w.Write([]byte("202 - Students details received"))
-	}
-}
-
-func allTutors(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		tutorArray := MS_getAllPersons(tutor_url)
-		json.NewEncoder(w).Encode(tutorArray)
-		w.WriteHeader(http.StatusAccepted)
-		// w.Write([]byte("202 - Tutor details received"))
-	}
-}
-
 func commentsFromTutor(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		params := mux.Vars(r)
@@ -173,38 +145,7 @@ func commentsFromTutor(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Retrieve all tutor details from tutor microservice
-func MS_getAllPersons(personUrl string) []Person {
-	resp, err := http.Get(personUrl)
-	var tutorArray []Person
-
-	if err == nil {
-		if resp.StatusCode == http.StatusNotFound {
-			fmt.Println("409 - No One Found")
-		} else {
-			data, _ := ioutil.ReadAll(resp.Body)
-			resp.Body.Close()
-			json.Unmarshal(data, &tutorArray)
-			// fmt.Println("202 - Successfully received people details")
-		}
-	} else {
-		fmt.Printf("The HTTP request failed with error %s\n", err)
-	}
-	return tutorArray
-}
-
-// Helper function for retrieving name from student/tutor array
-func Helper_retrieveName(id string, personArray []Person) string {
-	name := "undefined"
-	for _, person := range personArray {
-		if person.Id == id {
-			name = person.Name
-		}
-	}
-	return name
-}
-
-// DB function for retrieving all comments of student
+// DB function for retrieving all comments of student made by tutors
 // returns an array of type Comment of all comments
 func DB_retrieveAllComments(receiverId string, showid bool) []Comment {
 	var commentArray []Comment
@@ -218,74 +159,28 @@ func DB_retrieveAllComments(receiverId string, showid bool) []Comment {
 		panic(err.Error())
 	}
 
-	studentArray := MS_getAllPersons(student_url)
-	tutorArray := MS_getAllPersons(tutor_url)
-
 	for res.Next() {
 		var c Comment
-		var personArray []Person
 		res.Scan(&c.Id, &c.CommentDesc, &c.CommentorId, &c.CommentorType, &c.ReceiverId, &c.ReceiverType, &c.PublishedDatetime, &c.Anonymous)
 
-		switch c.ReceiverType {
-		case "Student":
-			personArray = studentArray
-		case "Tutor":
-			personArray = tutorArray
-		}
-		receiverName := Helper_retrieveName(c.ReceiverId, personArray)
-		c.ReceiverName = receiverName
-
-		if showid {
-			switch c.CommentorType {
-			case "Student":
-				personArray = studentArray
-			case "Tutor":
-				personArray = tutorArray
-			}
-			commentorName := Helper_retrieveName(c.CommentorId, personArray)
-			c.CommentorName = commentorName
-		} else {
+		if !showid {
 			if c.Anonymous {
-				c.CommentorName = ""
 				c.CommentorId = ""
 			}
 		}
+
 		commentArray = append(commentArray, c)
 	}
 
 	return commentArray
 }
 
-// // DB function for retrieving tutor's comments on a student
-// // returns an array of comments.
-// func DB_retrieveCommentsFromTeacher() []Comment {
-// 	var commentArray []Comment
-// 	tutorId := comment.CommentorId
-// 	studentId := comment.ReceiverId
-// 	commentDesc := "nil"
-
-// 	query := fmt.Sprintf(
-// 		`SELECT Comment FROM Comments
-// 		 WHERE commentorId = '%s' AND receiverId = '%s';`, tutorId, studentId)
-// 	res, err := db.Query(query)
-
-// 	if err != nil {
-// 		panic(err.Error())
-// 	}
-
-// 	if res.Next() {
-// 		res.Scan(&commentDesc)
-// 	}
-
-// 	return commentDesc
-// }
-
 // DB function for tutor comment a student, AKA creation of comment
 // returns true if insert is successful
 func DB_insertComment(comment Comment) bool {
 	query := fmt.Sprintf(
 		`INSERT INTO Comments(comment, commentorId, commentorType, receiverId, receiverType, datetime, anonymous)
-		 VALUES('%s', '%s', 'Tutor', '%s', 'Student', NOW(), %t);`,
+		 VALUES('%s', '%s', 'tutor', '%s', 'student', NOW(), %t);`,
 		comment.CommentDesc, comment.CommentorId, comment.ReceiverId, comment.Anonymous)
 	res, err := db.Exec(query)
 
@@ -301,7 +196,7 @@ func DB_insertComment(comment Comment) bool {
 // returns true if update is successful
 func DB_updateComment(comment Comment) bool {
 	query := fmt.Sprintf(
-		`UPDATE Comments SET comment = '%s', datetime = NOW(), anonymous = %t WHERE id = '%s';`,
+		`UPDATE Comments SET comment = '%s', datetime = NOW(), anonymous = %t WHERE id = '%d';`,
 		comment.CommentDesc, comment.Anonymous, comment.Id)
 	res, err := db.Exec(query)
 
@@ -382,10 +277,6 @@ func DB_retrieveGivenComments(tutorId string) []Comment {
 func DB_retrieveCommentsFromTutor(tutorId string, studentId string) []Comment {
 	var commentArray []Comment
 	var c Comment
-	tutorArray := MS_getAllPersons(tutor_url)
-	studentArray := MS_getAllPersons(student_url)
-	c.CommentorName = Helper_retrieveName(tutorId, tutorArray)
-	c.ReceiverName = Helper_retrieveName(studentId, studentArray)
 
 	query := fmt.Sprintf(
 		`SELECT * FROM Comments WHERE commentorId = '%s' 
@@ -399,7 +290,6 @@ func DB_retrieveCommentsFromTutor(tutorId string, studentId string) []Comment {
 	if res.Next() {
 		for res.Next() {
 			res.Scan(&c.Id, &c.CommentDesc, &c.CommentorId, &c.CommentorType, &c.ReceiverId, &c.ReceiverType, &c.PublishedDatetime, &c.Anonymous)
-
 			commentArray = append(commentArray, c)
 		}
 	} else {
@@ -414,8 +304,6 @@ func main() {
 	// environment variables
 	BASE_STUDENT_API_URL := os.Getenv("BASE_COMMENTS_API_STUDENT_URL")
 	BASE_TUTOR_API_URL := os.Getenv("BASE_COMMENTS_API_TUTOR_URL")
-	ALLSTUDENTS_API_URL := os.Getenv("ALLSTUDENTS_API_URL")
-	ALLTUTORS_API_URL := os.Getenv("ALLTUTORS_API_URL")
 
 	// start router
 	router := mux.NewRouter()
@@ -426,14 +314,12 @@ func main() {
 	router.HandleFunc(BASE_TUTOR_API_URL+"/received", commentsReceived).Methods("GET")
 	router.HandleFunc(BASE_TUTOR_API_URL+"/anon", anonComments).Methods("GET")
 	router.HandleFunc(BASE_TUTOR_API_URL+"/given", givenComments).Methods("GET")
-	router.HandleFunc(ALLSTUDENTS_API_URL, allStudents).Methods("GET")
-	router.HandleFunc(ALLTUTORS_API_URL, allTutors).Methods("GET")
 	router.HandleFunc(BASE_STUDENT_API_URL+"/from/{tutorid}", commentsFromTutor).Methods("GET")
 
 	// establish db connection
 	var err error
 	//db, err = sql.Open("mysql", "root:password@tcp(db:3318)/comment_db")
-	db, err = sql.Open("mysql", "root:password@tcp(db_comment:8186)/comment_db")
+	db, err = sql.Open("mysql", "root:password@tcp(db_comment:8184)/comment_db")
 	if err != nil {
 		panic(err.Error())
 	}

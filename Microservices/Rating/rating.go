@@ -18,24 +18,14 @@ type Rating struct {
 	Id                int    `json:"id"`
 	Rating            int    `json:"rating"`
 	RaterId           string `json:"raterId"`
-	RaterName         string `json:"raterName"`
 	RaterType         string `json:"raterType"`
 	ReceiverId        string `json:"receiverId"`
-	ReceiverName      string `json:"receiverName"`
 	ReceiverType      string `json:"receiverType"`
 	PublishedDatetime string `json:"datetime"`
 	Anonymous         bool   `json:"anonymous"`
 }
 
-type Person struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-}
-
 var db *sql.DB
-
-const student_url = "http://ms_student:8183/students"
-const tutor_url = "http://ms_tutor:8184/tutors"
 
 func landing(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "~ Ratings & Comments Dashboard ~")
@@ -67,8 +57,8 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotAcceptable)
 			w.Write([]byte("No url query or incorrect id value in url query. Please use 1 for true, 0 for false."))
 		}
-
 	}
+
 	if r.Header.Get("Content-type") == "application/json" {
 		var rating Rating
 		regBody, err := ioutil.ReadAll(r.Body)
@@ -92,9 +82,6 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 					w.WriteHeader(http.StatusBadRequest)
 					w.Write([]byte("400 - Unable to create rating"))
 				}
-			} else {
-				w.WriteHeader(http.StatusConflict)
-				w.Write([]byte("409 - Rating already made! Try PUT method instead."))
 			}
 		}
 		// {Part 3: Update rating on a student}
@@ -148,24 +135,6 @@ func givenRatings(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func allStudents(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		studentArray := MS_getAllPersons(student_url)
-		json.NewEncoder(w).Encode(studentArray)
-		w.WriteHeader(http.StatusAccepted)
-		// w.Write([]byte("202 - Students details received"))
-	}
-}
-
-func allTutors(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
-		tutorArray := MS_getAllPersons(tutor_url)
-		json.NewEncoder(w).Encode(tutorArray)
-		w.WriteHeader(http.StatusAccepted)
-		// w.Write([]byte("202 - Tutor details received"))
-	}
-}
-
 func ratingFromTutor(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		params := mux.Vars(r)
@@ -176,37 +145,6 @@ func ratingFromTutor(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusAccepted)
 		// w.Write([]byte("202 - Tutor details received"))
 	}
-}
-
-// Retrieve all tutor details from tutor microservice
-func MS_getAllPersons(personUrl string) []Person {
-	resp, err := http.Get(personUrl)
-	var tutorArray []Person
-
-	if err == nil {
-		if resp.StatusCode == http.StatusNotFound {
-			fmt.Println("409 - No One Found")
-		} else {
-			data, _ := ioutil.ReadAll(resp.Body)
-			resp.Body.Close()
-			json.Unmarshal(data, &tutorArray)
-			// fmt.Println("202 - Successfully received people details")
-		}
-	} else {
-		fmt.Printf("The HTTP request failed with error %s\n", err)
-	}
-	return tutorArray
-}
-
-// Helper function for retrieving name from student/tutor array
-func Helper_retrieveName(id string, personArray []Person) string {
-	name := "undefined"
-	for _, person := range personArray {
-		if person.Id == id {
-			name = person.Name
-		}
-	}
-	return name
 }
 
 // DB function for retrieving all ratings of student
@@ -223,36 +161,13 @@ func DB_retrieveAllRatings(receiverId string, showid bool) []Rating {
 		panic(err.Error())
 	}
 
-	studentArray := MS_getAllPersons(student_url)
-	tutorArray := MS_getAllPersons(tutor_url)
-
 	for res.Next() {
 		var r Rating
-		var personArray []Person
 		res.Scan(&r.Id, &r.Rating, &r.RaterId, &r.RaterType, &r.ReceiverId, &r.ReceiverType, &r.PublishedDatetime, &r.Anonymous)
 
-		switch r.ReceiverType {
-		case "Student":
-			personArray = studentArray
-		case "Tutor":
-			personArray = tutorArray
-		}
-		receiverName := Helper_retrieveName(r.ReceiverId, personArray)
-		r.ReceiverName = receiverName
-
-		if showid {
-			switch r.RaterType {
-			case "Student":
-				personArray = studentArray
-			case "Tutor":
-				personArray = tutorArray
-			}
-			raterName := Helper_retrieveName(r.RaterId, personArray)
-			r.RaterName = raterName
-		} else {
+		if !showid {
 			if r.Anonymous {
 				r.RaterId = ""
-				r.RaterName = ""
 			}
 		}
 		ratingArray = append(ratingArray, r)
@@ -289,7 +204,7 @@ func DB_retrieveSingleRating(rating Rating) int {
 func DB_insertRating(rating Rating) bool {
 	query := fmt.Sprintf(
 		`INSERT INTO Ratings(rating, raterId, raterType, receiverId, receiverType, datetime, anonymous)
-		 VALUES('%d', '%s', 'Tutor', '%s', 'Student', NOW(), %t);`,
+		 VALUES('%d', '%s', 'tutor', '%s', 'student', NOW(), %t);`,
 		rating.Rating, rating.RaterId, rating.ReceiverId, rating.Anonymous)
 	res, err := db.Exec(query)
 
@@ -386,12 +301,10 @@ func DB_retrieveGivenRatings(tutorId string) []Rating {
 func DB_retrieveRatingFromTutor(tutorId string, studentId string) Rating {
 	var r Rating
 	r.Rating = -1
-	tutorArray := MS_getAllPersons(tutor_url)
-	studentArray := MS_getAllPersons(student_url)
 	r.RaterId = tutorId
-	r.RaterName = Helper_retrieveName(tutorId, tutorArray)
+	r.RaterType = "tutor"
 	r.ReceiverId = studentId
-	r.ReceiverName = Helper_retrieveName(studentId, studentArray)
+	r.ReceiverType = "student"
 
 	query := fmt.Sprintf(
 		`SELECT * FROM Ratings WHERE raterId = '%s' 
@@ -413,9 +326,7 @@ func main() {
 	// environment variables
 	BASE_STUDENT_API_URL := os.Getenv("BASE_RATINGS_API_STUDENT_URL")
 	BASE_TUTOR_API_URL := os.Getenv("BASE_RATINGS_API_TUTOR_URL")
-	ALLSTUDENTS_API_URL := os.Getenv("ALLSTUDENTS_API_URL")
-	ALLTUTORS_API_URL := os.Getenv("ALLTUTORS_API_URL")
-	fmt.Println(ALLSTUDENTS_API_URL)
+
 	// start router
 	router := mux.NewRouter()
 
@@ -425,14 +336,12 @@ func main() {
 	router.HandleFunc(BASE_TUTOR_API_URL+"/received", ratingsReceived).Methods("GET")
 	router.HandleFunc(BASE_TUTOR_API_URL+"/anon", anonRatings).Methods("GET")
 	router.HandleFunc(BASE_TUTOR_API_URL+"/given", givenRatings).Methods("GET")
-	router.HandleFunc(ALLSTUDENTS_API_URL, allStudents).Methods("GET")
-	router.HandleFunc(ALLTUTORS_API_URL, allTutors).Methods("GET")
 	router.HandleFunc(BASE_STUDENT_API_URL+"/from/{tutorid}", ratingFromTutor).Methods("GET")
 
 	// establish db connection
 	var err error
 	//db, err = sql.Open("mysql", "root:password@tcp(db:3318)/rating_db")
-	db, err = sql.Open("mysql", "root:password@tcp(db_rating:8185)/rating_db")
+	db, err = sql.Open("mysql", "root:password@tcp(db_rating:8183)/rating_db")
 	if err != nil {
 		panic(err.Error())
 	}
