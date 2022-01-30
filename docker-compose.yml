@@ -73,11 +73,6 @@ services:
       dockerfile: rating.Dockerfile
     env_file:
       - ./Microservices/Rating/rating.env
-    # environment:
-    #   - BASE_RATINGS_API_STUDENT_URL=/ratings/student/{studentid}
-    #   - BASE_RATINGS_API_TUTOR_URL=/ratings/tutor/{tutorid}
-    #   - ALLSTUDENTS_API_URL=/students
-    #   - ALLTUTORS_API_URL=/tutors
     # image: 18-rating_ms_image
     container_name: 18-ms_rating
     ports:
@@ -94,11 +89,6 @@ services:
       dockerfile: comment.Dockerfile
     env_file:
       - ./Microservices/Comment/comment.env
-    # environment:
-    #   - BASE_COMMENTS_API_STUDENT_URL=/comments/student/{studentid}
-    #   - BASE_COMMENTS_API_TUTOR_URL=/comments/tutor/{tutorid}
-    #   - ALLSTUDENTS_API_URL=/students
-    #   - ALLTUTORS_API_URL=/tutors
     # image: 18-comment_ms_image
     container_name: 18-ms_comment
     ports:
