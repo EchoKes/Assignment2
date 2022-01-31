@@ -178,7 +178,7 @@ http://localhost:8181/ratings
 | ----------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------- |
 | `id`        | number  | Required | The ID of the rating given                                                                                    |
 | `rating`    | number  | Required | An integer between 1 to 5 inclusive representing the rating score                                             |
-| `anonymous` | boolean | Optional | Specify whether the rating should be anonymous, where `true` means remain anonymous. Default value is `false` |
+| `anonymous` | boolean | Required | Specify whether the rating should be anonymous, where `true` means remain anonymous. Default value is `false` |
 
 #### Example Request
 
@@ -384,7 +384,7 @@ http://localhost:8182/comments
 | ----------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `id`        | number  | Required | The ID of the comment given                                                                                                                                  |
 | `comment`   | number  | Required | A message that contains at least 1 character, and consists of only `0-9`, `a-z`, `A-Z` and `,.!?+-*/%=()$@:'\` characters                                    |
-| `anonymous` | boolean | Optional | Specify whether the comment should be anonymous, where `true` means remain anonymous. Leaving this parameter empty will leave the anonymity status unchanged |
+| `anonymous` | boolean | Required | Specify whether the comment should be anonymous, where `true` means remain anonymous. Leaving this parameter empty will leave the anonymity status unchanged |
 
 #### Example Request
 
