@@ -30,6 +30,7 @@ curl "localhost:8181/ratings/student/S01234567A?showid=0"
 
 If request was successful, a JSON array of ratings will be returned. `raterId` field will be an empty string if anonymous is true.
 If request was unsuccessful, a corresponding status code and error message will be returned.
+
 _To return `raterId` regardless of anonymity, change `showid=0` in endpoint URL to `showid=1`._
 
 **Example**
@@ -213,9 +214,11 @@ Base URL: `localhost:8182/comments`
 
 ### 2.1 GET comments
 
-This endpoint is used to get all comments given by students to other students, tutors, modules and classes.
+This endpoint is used to get all comments given by tutors to other students.
 
 #### Endpoint URL
+
+`:receiverId` is referencing student's id.
 
 ```url
 http://localhost:8182/comments/student/:receiverId?showid=0
@@ -233,6 +236,7 @@ curl "localhost:8182/comments/student/S01234567A?showid=0"
 
 If request was successful, a JSON array of comments will be returned. `commentorId` field will be an empty string if anonymous is true.
 If request was unsuccessful, a corresponding status code and error message will be returned.
+
 _To return `commentorId` regardless of anonymity, change `showid=0` in endpoint URL to `showid=1`._
 
 **Example**
@@ -330,13 +334,12 @@ http://localhost:8182/comments
 
 #### JSON Body Parameters
 
-| Name        | Type    | Required | Description                                                                                                               |
-| ----------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `comment`   | string  | Required | A message that contains at least 1 character, and consists of only `0-9`, `a-z`, `A-Z` and `,.!?+-*/%=()$@:'\` characters |
-| `studentId` | string  | Required | The ID of the student giving the comment                                                                                  |
-| `target`    | string  | Required | The target of the comment, or who the comment is for. The accepted targets are `student`, `tutor`, `module`, `class`.     |
-| `targetId`  | string  | Required | The ID of the specified target type                                                                                       |
-| `anonymous` | boolean | Optional | Specify whether the comment should be anonymous, where `true` means remain anonymous. Default value is `false`            |
+| Name          | Type    | Required | Description                                                                                                               |
+| ------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `comment`     | string  | Required | A message that contains at least 1 character, and consists of only `0-9`, `a-z`, `A-Z` and `,.!?+-*/%=()$@:'\` characters |
+| `commentorId` | string  | Required | The ID of the tutor giving the comment                                                                                    |
+| `receiverId`  | string  | Required | The ID of the student receiving the comment                                                                               |
+| `anonymous`   | boolean | Optional | Specify whether the comment should be anonymous, where `true` means remain anonymous. Default value is `false`            |
 
 #### Example Request
 
