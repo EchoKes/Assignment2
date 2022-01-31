@@ -97,7 +97,7 @@ If request was unsuccessful, a corresponding status code and error message will 
         "raterType": "tutor",
         "receiverId": "S01234567A",
         "receiverType": "student",
-        "dateTime": "2022-1-31 09:52:49",
+        "datetime": "2022-1-31 09:52:49",
         "anonymous": false
     },
     {
@@ -107,7 +107,7 @@ If request was unsuccessful, a corresponding status code and error message will 
         "raterType": "tutor",
         "receiverId": "S12345678B",
         "receiverType": "student",
-        "dateTime": "2022-1-31 09:52:49",
+        "datetime": "2022-1-31 09:52:49",
         "anonymous": false
     }
 ]
@@ -207,7 +207,7 @@ The response will be a status code `202` if request was successful, otherwise a 
 
 ## 2. Comments
 
-Base URL: `localhost:8181/comments`
+Base URL: `localhost:8182/comments`
 
 ---
 
@@ -218,7 +218,7 @@ This endpoint is used to get all comments given by students to other students, t
 #### Endpoint URL
 
 ```url
-http://localhost:8181/api/v1/comments/:target/:targetId
+http://localhost:8182/comments/student/:receiverId?showid=0
 ```
 
 #### Example Request
@@ -226,12 +226,14 @@ http://localhost:8181/api/v1/comments/:target/:targetId
 cURL
 
 ```sh
-curl "localhost:8181/api/v1/comments/module/T024681012"
+curl "localhost:8182/comments/student/S01234567A?showid=0"
 ```
 
 #### Response
 
-If request was successful, a JSON array of comments will be returned, and the `studentId` field will be an empty string if anonymous is set to true. If the request was unsuccessful, a corresponding status code and error message will be returned.
+If request was successful, a JSON array of comments will be returned. `commentorId` field will be an empty string if anonymous is true.
+If request was unsuccessful, a corresponding status code and error message will be returned.
+_To return `commentorId` regardless of anonymity, change `showid=0` in endpoint URL to `showid=1`._
 
 **Example**
 
@@ -239,35 +241,39 @@ If request was successful, a JSON array of comments will be returned, and the `s
 [
     {
         "id": 1,
-        "comment": "cringe",
-        "studentId": "S10198765A",
-        "target": "module",
-        "targetId": "T024681012",
-        "dateTime": "2022-1-17 13:28:11",
+        "comment": "Hands up work on time.",
+        "commentorId": "T01234567A",
+        "commentorType": "tutor",
+        "receiverId": "S01234567A",
+        "receiverType": "student",
+        "datetime": "2022-1-31 09:52:49",
         "anonymous": false
     },
     {
         "id": 2,
-        "comment": "SUS ඞ",
-        "studentId": "",
-        "target": "module",
-        "targetId": "T024681012",
-        "dateTime": "2022-1-17 13:39:11",
-        "anonymous": true
+        "comment": "Excellent work!",
+        "commentorId": "",
+        "commentorType": "tutor",
+        "receiverId": "S12345678B",
+        "receiverType": "student",
+        "datetime": "2022-1-31 09:52:49",
+        "anonymous": false
     }
 ]
 ```
 
 ---
 
-### 2.2 GET comments (sent)
+### 2.2 GET comments (given)
 
-This endpoint is used to get all comments sent by the student to other students, tutors, modules and classes.
+This endpoint is used to get all comments given by the tutor to other students.
 
 #### Endpoint URL
 
+`:receiverId` is referencing tutor's id.
+
 ```url
-http://localhost:8181/api/v1/comments/student/:studentId/sent
+http://localhost:8182/comments/tutor/:receiverId/given
 ```
 
 #### Example Request
@@ -275,12 +281,13 @@ http://localhost:8181/api/v1/comments/student/:studentId/sent
 cURL
 
 ```sh
-curl "localhost:8181/api/v1/comments/student/S10198765A/sent"
+curl "localhost:8182/comments/tutor/T01234567A/given"
 ```
 
 #### Response
 
-If request was successful, a JSON array of comments sent by the student will be returned. Otherwise, a corresponding status code and error message will be returned.
+If request was successful, a JSON array of comments will be returned.
+If request was unsuccessful, a corresponding status code and error message will be returned.
 
 **Example**
 
@@ -288,21 +295,23 @@ If request was successful, a JSON array of comments sent by the student will be 
 [
     {
         "id": 1,
-        "comment": "git gud noob",
-        "studentId": "S10198765A",
-        "target": "module",
-        "targetId": "M09271",
-        "dateTime": "2022-1-17 13:56:0",
-        "anonymous": true
+        "comment": "Excellent work!",
+        "commentorId": "T01234567A",
+        "commentorType": "tutor",
+        "receiverId": "S01234567A",
+        "receiverType": "student",
+        "datetime": "2022-1-31 09:52:49",
+        "anonymous": false
     },
     {
         "id": 2,
-        "comment": "SUS ඞ",
-        "studentId": "S10198765A",
-        "target": "class",
-        "targetId": "C8127S",
-        "dateTime": "2022-1-17 14:1:35",
-        "anonymous": false
+        "comment": "Hands up work on time.",
+        "commentorId": "T01234567A",
+        "commentorType": "tutor",
+        "receiverId": "S12345678B",
+        "receiverType": "student",
+        "datetime": "2022-1-31 09:52:49",
+        "anonymous": true
     }
 ]
 ```
@@ -311,12 +320,12 @@ If request was successful, a JSON array of comments sent by the student will be 
 
 ### 2.3 POST comments
 
-This endpoint is used by students to give a new rating.
+This endpoint is used by tutors to give a new comment.
 
 #### Endpoint URL
 
 ```url
-http://localhost:8181/api/v1/comments
+http://localhost:8182/comments
 ```
 
 #### JSON Body Parameters
@@ -334,13 +343,12 @@ http://localhost:8181/api/v1/comments
 cURL
 
 ```sh
-curl --request POST 'localhost:8181/api/v1/comments' \
+curl --request POST 'localhost:8182/comments' \
 --header 'Content-Type: application/json' \
 --data '{
-    "comment": "git gud noob",
-    "studentId": "S10198765A",
-    "target": "student",
-    "targetId": "T024681012",
+    "comment": "Excellent work!",
+    "commentorId": "T01234567A",
+    "receiverId": "S01234567A",
     "anonymous": true
 }'
 ```
@@ -348,45 +356,44 @@ curl --request POST 'localhost:8181/api/v1/comments' \
 Windows cURL
 
 ```sh
-curl --request POST "localhost:8181/api/v1/comments" --header "Content-Type: application/json" --data "{\"comment\": \"git gud noob\",\"studentId\": \"S10198765A\",\"target\": \"student\",\"targetId\": \"T024681012\",\"anonymous\": true}"
+curl --request POST "localhost:8182/comments" --header "Content-Type: application/json" --data "{\"comment\": \"Excellent work!\",\"commentorId\": \"T01234567A\",\"receiverId\": \"S01234567A\",\"anonymous\": true}"
 ```
 
 #### Response
 
-The response will be a status code `200` if request was successful, otherwise a corresponding status code and error message.
+The response will be a status code `201` if request was successful, otherwise a corresponding status code and error message.
 
 ---
 
 ### 2.4 PUT comments
 
-This endpoint is used by students to update their own comments.
+This endpoint is used by tutors to update their own comments.
 
 #### Endpoint URL
 
 ```url
-http://localhost:8181/api/v1/comments
+http://localhost:8182/comments
 ```
 
 #### JSON Body Parameters
 
-| Name        | Type    | Required | Description                                                                                                                                                 |
-| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`        | number  | Required | The ID of the comment given                                                                                                                                 |
-| `comment`   | number  | Required | A message that contains at least 1 character, and consists of only `0-9`, `a-z`, `A-Z` and `,.!?+-*/%=()$@:'\` characters                                   |
-| `studentId` | string  | Required | The ID of the student giving the comment                                                                                                                    |
-| `anonymous` | boolean | Optional | Specify whether the rating should be anonymous, where `true` means remain anonymous. Leaving this parameter empty will leave the anonymity status unchanged |
+| Name        | Type    | Required | Description                                                                                                                                                  |
+| ----------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`        | number  | Required | The ID of the comment given                                                                                                                                  |
+| `comment`   | number  | Required | A message that contains at least 1 character, and consists of only `0-9`, `a-z`, `A-Z` and `,.!?+-*/%=()$@:'\` characters                                    |
+| `studentId` | string  | Required | The ID of the student giving the comment                                                                                                                     |
+| `anonymous` | boolean | Optional | Specify whether the comment should be anonymous, where `true` means remain anonymous. Leaving this parameter empty will leave the anonymity status unchanged |
 
 #### Example Request
 
 cURL
 
 ```sh
-curl --request PUT 'localhost:8181/api/v1/comments' \
+curl --request PUT 'localhost:8182/comments' \
 --header 'Content-Type: application/json' \
 --data '{
-    "id": 4,
-    "comment": "SUS",
-    "studentId": "S10198765A",
+    "id": 1,
+    "comment": "Decent work.",
     "anonymous": true
 }'
 ```
@@ -394,11 +401,11 @@ curl --request PUT 'localhost:8181/api/v1/comments' \
 Windows cURL
 
 ```sh
-curl --request PUT "localhost:8181/api/v1/comments" --header "Content-Type: application/json" --data "{\"id\": 5,\"comment\": \"SUS\",\"studentId\": \"S10198765A\",\"anonymous\": true}"
+curl --request PUT "localhost:8182/comments" --header "Content-Type: application/json" --data "{\"id\": 1,\"comment\": \"Decent work.\",\"anonymous\": true}"
 ```
 
 #### Response
 
-The response will be a status code `200` if request was successful, otherwise a corresponding status code and error message.
+The response will be a status code `202` if request was successful, otherwise a corresponding status code and error message.
 
 ---
