@@ -384,7 +384,6 @@ http://localhost:8182/comments
 | ----------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `id`        | number  | Required | The ID of the comment given                                                                                                                                  |
 | `comment`   | number  | Required | A message that contains at least 1 character, and consists of only `0-9`, `a-z`, `A-Z` and `,.!?+-*/%=()$@:'\` characters                                    |
-| `studentId` | string  | Required | The ID of the student giving the comment                                                                                                                     |
 | `anonymous` | boolean | Optional | Specify whether the comment should be anonymous, where `true` means remain anonymous. Leaving this parameter empty will leave the anonymity status unchanged |
 
 #### Example Request
