@@ -69,7 +69,7 @@ const CommentCard = ({ comment, tutorid, updateComments, personal }) => {
             anonymous: checked,
           };
 
-          client.put(`/${comment.receiverId}`, updatedComment).then((res) => {
+          client.put("", updatedComment).then((res) => {
             console.log(res);
             if (res.status === 202) {
               updateComments();
@@ -299,7 +299,7 @@ const CommentInputField = ({ updateComments, tutorid, studentid, anon }) => {
         anonymous: anon,
       };
 
-      client.post(`/${studentid}`, newComment).then((res) => {
+      client.post("", newComment).then((res) => {
         console.log(res);
         if (res.status === 201) {
           updateComments();

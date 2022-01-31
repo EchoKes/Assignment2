@@ -32,8 +32,8 @@ func landing(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "~ Ratings & Comments Dashboard ~")
 }
 
-// Retrieve all comments, Post a comment on student, Update a comment given to a student
-func allComments(w http.ResponseWriter, r *http.Request) {
+// Retrieve all comments
+func gComments(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	studentId := params["studentid"]
 	// {Part 1: Retrieve all comments}
@@ -59,7 +59,10 @@ func allComments(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("No url query or incorrect id value in url query. Please use 1 for true, 0 for false."))
 		}
 	}
+}
 
+// Post a comment on student, Update a comment given to a student
+func cuComment(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Content-type") == "application/json" {
 		var comment Comment
 		regBody, err := ioutil.ReadAll(r.Body)
@@ -243,7 +246,8 @@ func main() {
 
 	// setup routers
 	router.HandleFunc("/landing", landing)
-	router.HandleFunc(BASE_STUDENT_API_URL, allComments).Methods("GET", "POST", "PUT")
+	router.HandleFunc(BASE_STUDENT_API_URL, gComments).Methods("GET")
+	router.HandleFunc("/comments", cuComment).Methods("POST", "PUT")
 	router.HandleFunc(BASE_TUTOR_API_URL+"/given", givenComments).Methods("GET")
 	router.HandleFunc(BASE_STUDENT_API_URL+"/from/{tutorid}", commentsFromTutor).Methods("GET")
 

@@ -31,8 +31,8 @@ func landing(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "~ Ratings & Comments Dashboard ~")
 }
 
-// Retrieve all ratings, Post a rating on student, Update a rating given to a student
-func allRatings(w http.ResponseWriter, r *http.Request) {
+// Retrieve all ratings of student
+func gRatings(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	studentId := params["studentid"]
 	// {Part 1: Retrieve all ratings}
@@ -58,7 +58,10 @@ func allRatings(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("No url query or incorrect id value in url query. Please use 1 for true, 0 for false."))
 		}
 	}
+}
 
+// Post a rating on student, Update a rating given to a student
+func cuRating(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Content-type") == "application/json" {
 		var rating Rating
 		regBody, err := ioutil.ReadAll(r.Body)
@@ -170,8 +173,8 @@ func DB_insertRating(rating Rating) bool {
 // returns true if update is successful
 func DB_updateRating(rating Rating) bool {
 	query := fmt.Sprintf(
-		`UPDATE Ratings SET rating = '%d', datetime = NOW(), anonymous = %t WHERE raterId = '%s' AND receiverId = '%s';`,
-		rating.Rating, rating.Anonymous, rating.RaterId, rating.ReceiverId)
+		`UPDATE Ratings SET rating = '%d', datetime = NOW(), anonymous = %t WHERE id = '%d';`,
+		rating.Rating, rating.Anonymous, rating.Id)
 	res, err := db.Exec(query)
 
 	if err != nil {
@@ -239,7 +242,8 @@ func main() {
 
 	// setup routers
 	router.HandleFunc("/landing", landing)
-	router.HandleFunc(BASE_STUDENT_API_URL, allRatings).Methods("GET", "POST", "PUT")
+	router.HandleFunc(BASE_STUDENT_API_URL, gRatings).Methods("GET")
+	router.HandleFunc("/ratings", cuRating).Methods("POST", "PUT")
 	router.HandleFunc(BASE_TUTOR_API_URL+"/given", givenRatings).Methods("GET")
 	router.HandleFunc(BASE_STUDENT_API_URL+"/from/{tutorid}", ratingFromTutor).Methods("GET")
 

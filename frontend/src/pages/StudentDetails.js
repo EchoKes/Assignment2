@@ -121,7 +121,7 @@ const StudentRating = ({ studentid, tutorid }) => {
   const [ratingsArray, setRatingsArray] = useState([]);
   // api call to retrieve all comments of a student
   const retrieveRating = async () => {
-    const tRes = await clientRating.get(`/${studentid}?showid=1`);
+    const tRes = await clientRating.get(`/student/${studentid}?showid=1`);
     const studentArr = await studentClient.get();
     const tutorArr = await tutorClient.get();
 
@@ -143,7 +143,9 @@ const StudentRating = ({ studentid, tutorid }) => {
 
   const [ratingFromTutor, setRatingFromTutor] = useState(""); // api student's rating from tutor
   const retrieveRatingFromTutor = async () => {
-    const rating = await clientRating.get(`/${studentid}/from/${tutorid}`);
+    const rating = await clientRating.get(
+      `/student/${studentid}/from/${tutorid}`
+    );
     const studentArr = await studentClient.get();
     let name = getPerson(studentid, studentArr.data);
     rating.data["receiverName"] = name;
@@ -193,7 +195,7 @@ const StudentComment = ({ receivername, studentid, tutorid }) => {
 
   // api call to retrieve all comments of a student
   const retrieveComments = async () => {
-    const tRes = await clientComment.get(`/${studentid}?showid=1`);
+    const tRes = await clientComment.get(`/student/${studentid}?showid=1`);
     const studentArr = await studentClient.get();
     const tutorArr = await tutorClient.get();
 

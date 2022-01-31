@@ -87,7 +87,7 @@ const ratingChanged = ({ updateRating, rating }) => {
   rating.anonymous = defaultAnon;
 
   if (defaultRating < 0) {
-    client.post(`/${rating.receiverId}`, rating).then((res) => {
+    client.post("", rating).then((res) => {
       console.log("rating posted!");
       console.log(res);
       if (res.status === 201) {
@@ -96,7 +96,7 @@ const ratingChanged = ({ updateRating, rating }) => {
     });
   } else {
     console.log(rating);
-    client.put(`/${rating.receiverId}`, rating).then((res) => {
+    client.put("", rating).then((res) => {
       console.log("rating updated!");
       console.log(res);
       if (res.status === 202) {
