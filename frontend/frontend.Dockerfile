@@ -13,3 +13,5 @@ COPY --from=builder /app/build ./build
 EXPOSE 8180:3000
 
 CMD ["serve", "-s", "build"]
+
+
