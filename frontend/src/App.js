@@ -31,7 +31,7 @@ function App() {
         );
       } else {
         window.alert("Unauthorised! Only tutors allowed.");
-        history.back();
+        window.history.back();
       }
     });
     localStorage.setItem("tutorid", id);
