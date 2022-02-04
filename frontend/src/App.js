@@ -5,6 +5,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import React, { useState } from "react";
+import axios from "axios";
 import Dashboard from "./pages/Dashboard";
 import { StudentDetails } from "./pages/StudentDetails";
 import { TutorRatings } from "./pages/TutorRatings";
@@ -15,10 +16,27 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import StarIcon from "@mui/icons-material/Star";
 import CommentIcon from "@mui/icons-material/Comment";
 
-// retrieve id from authentication package 3.1
-localStorage.setItem("tutorid", "T01234567A");
-
 function App() {
+  // retrieve id from authentication package 3.1
+  const [id, setId] = useState("");
+  React.useEffect(() => {
+    axios.get("10.31.11.11:8090/session").then((res) => {
+      let uid = res.data["userID"];
+      let uType = res.data["usertype"];
+      console.log(uType);
+      if (uType === "tutor") {
+        setId(uid);
+        console.log(
+          `user type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
+        );
+      } else {
+        window.alert("Unauthorised! Only tutors allowed.");
+        history.back();
+      }
+    });
+    localStorage.setItem("tutorid", id);
+  }, []);
+
   return (
     <Router>
       <Navbar>
