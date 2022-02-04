@@ -54,6 +54,7 @@ services:
       - ms_comment
       - db_rating
       - db_comment
+      - json_server
     build:
       context: ./frontend
       dockerfile: frontend.Dockerfile
@@ -66,13 +67,15 @@ services:
       # - ./frontend:/app
     networks:
       - assignment2bridge
-  json-server:
+  json_server:
+    container_name: 18-json_server
     build:
       context: ./frontend
       dockerfile: js.Dockerfile
-    tty: true
     ports:
       - 8185:8185
+    networks:
+      - assignment2bridge
     command: json-server -H 0.0.0.0 db.json -p8185
 
   # Rating Microservice
