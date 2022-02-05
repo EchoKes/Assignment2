@@ -87,7 +87,7 @@ Installation Requirements:
 - Node Version 14.17.5 or above
 - NPM Package Manager
 
-### 4.1. Backend start up
+### 4.1. Backend Start Up
 
 In the Microservices directory (where multiple microservices are), cd into each individual folder and do `go run *.go` to start running the server. On successful setup, the server will be available on **port 8181** for ratings microservice and **port 8182** for comments microservice.
 
@@ -99,17 +99,21 @@ Please ensure that MySQL is installed and operation on your device. In the Datab
 
 In the frontend directory, run `npm install` to download the relevant dependencies. Then, run `npm start` to serve the React application on **port 8180**.
 
-### 4.4. json-server Mock Data
+### 4.4. Json Server Mock Data
 
 In the frontend directory, run `json-server --watch db.json --port 8185` to serve the json-server on **port 8185**.
 
 ## 5. Design Considerations
 
-For this overall assignment, a total of 3 microservices were created, 2 for the backend API which serves API requests for both ratings and comments, and the other for the frontend server, which serves the React webapp. The reason why comment and ratings are split into 2 individual microservices is because in the event of a failure in one of the microservice, the other can still be served. Because of this, the functions in these 2 microservices are very similar.
+### Backend Microservices
 
-The use of MySQL database was a choice between comfort and compatibility. In this case, comfort was the winner as more time was spent towards learning and implementing a new frontend technology. If more time was allocated for this assignment, a better choice would be to go with a lightweight, non-relational database design such as [Redis](https://redis.io/) or [MongoDB](https://www.mongodb.com/) as this package does not require any joins operation.
+For this overall assignment, a total of 3 microservices were created, 2 for the backend API which serves API requests for both ratings and comments, and the other for the frontend server, which serves the React webapp. The reason why comments and ratings are split into 2 individual microservices is because in the event of a failure in one of the microservices, the other can still be served. As a result of this implementation, the functions in these 2 microservices are very similar.
 
-### Frontend Server Microservice
+### Database
+
+The use of MySQL database was a choice between comfort and compatibility. In this case, comfort was the winner as more time was spent towards learning and implementing a new frontend framework. If more time was allocated for this assignment, a better choice would be to go with a lightweight, non-relational database design such as [Redis](https://redis.io/) or [MongoDB](https://www.mongodb.com/) as this package does not require any joins operation.
+
+### Frontend Web Server
 
 For the frontend, the chosen framework was React as it is component-based. The benefit of doing so is that certain parts of the frontend can reuse these components as some of them are repetitive. This has significantly reduce the amount of code needed to be written. Examples can be found in student's or tutor's ratings/comments with tab implementation. The use of states has made the web application much more enjoyable as users do not need to refresh to view changes made. Also, I wanted to take this chance to learn a new framework.
 
