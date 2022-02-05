@@ -77,6 +77,7 @@ services:
     networks:
       - assignment2bridge
     command: json-server -H 0.0.0.0 db.json -p8185
+    # image: 18-json_server_image
 
   # Rating Microservice
   ms_rating:
