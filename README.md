@@ -12,7 +12,7 @@ For this package, the chosen technology stack consists of:
 - [MUI](https://mui.com/) component library for frontend.
 - [json-server](https://www.npmjs.com/package/json-server) to mock students and tutors data.
 
-![designstructure]: ./images/designstructure.PNG
+![designstructure](images/designstructure.PNG)
 
 **Docker Hub Links**
 
@@ -23,7 +23,7 @@ For this package, the chosen technology stack consists of:
 - [React Frontend](https://hub.docker.com/repository/docker/echokes/18-frontend_react_image)
 - [Json Server](https://hub.docker.com/repository/docker/echokes/18-json_server_image)
 
-**For an in-depth documentation of the API, please refer to the [API Reference](API_Reference.md).**
+**For an in-depth documentation of the API, please refer to the [API Reference](API_reference.md).**
 
 The task breakdown for this assignment is as follows:
 
@@ -121,8 +121,8 @@ For the frontend, the chosen framework was React as it is component-based. The b
 ## Roadmap
 
 - [ ] Implement Package 3.1 Authentication
-- [ ] Implement Package 3.3 get students details
-- [ ] Implement Package 3.4 get tutors details
+- [ ] Implement Package 3.2 get students details
+- [ ] Implement Package 3.3 get tutors details
 - [ ] Implement Package 3.9 get students received ratings and comments
 
 ## Contact
