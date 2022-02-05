@@ -18,25 +18,25 @@ import CommentIcon from "@mui/icons-material/Comment";
 
 function App() {
   // retrieve id from authentication package 3.1
-  const [id, setId] = useState("");
-  React.useEffect(() => {
-    axios.get("10.31.11.11:8090/session").then((res) => {
-      let uid = res.data["userID"];
-      let uType = res.data["usertype"];
-      console.log(uType);
-      if (uType === "tutor") {
-        setId(uid);
-        console.log(
-          `user type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
-        );
-      } else {
-        window.alert("Unauthorised! Only tutors allowed.");
-        window.history.back();
-      }
-    });
-    localStorage.setItem("tutorid", id);
-  }, []);
-
+  // const [id, setId] = useState("");
+  // React.useEffect(() => {
+  //   axios.get("10.31.11.11:8090/session").then((res) => {
+  //     let uid = res.data["userID"];
+  //     let uType = res.data["usertype"];
+  //     console.log(uType);
+  //     if (uType === "tutor") {
+  //       setId(uid);
+  //       console.log(
+  //         `user type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
+  //       );
+  //     } else {
+  //       window.alert("Unauthorised! Only tutors allowed.");
+  //       window.history.back();
+  //     }
+  //   });
+  //   localStorage.setItem("tutorid", id);
+  // }, []);
+  localStorage.setItem("tutorid", "T01234567A");
   return (
     <Router>
       <Navbar>

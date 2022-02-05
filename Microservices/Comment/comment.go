@@ -127,7 +127,7 @@ func commentsFromTutor(w http.ResponseWriter, r *http.Request) {
 // DB function for retrieving all comments of student made by tutors
 // returns an array of type Comment of all comments
 func DB_retrieveAllComments(receiverId string, showid bool) []Comment {
-	var commentArray []Comment
+	commentArray := []Comment{}
 
 	query := fmt.Sprintf(`
 	SELECT * FROM Comments WHERE receiverId = '%s'

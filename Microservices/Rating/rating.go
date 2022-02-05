@@ -126,7 +126,7 @@ func ratingFromTutor(w http.ResponseWriter, r *http.Request) {
 // DB function for retrieving all ratings of student
 // returns an array of type Rating of all ratings
 func DB_retrieveAllRatings(receiverId string, showid bool) []Rating {
-	var ratingArray []Rating
+	ratingArray := []Rating{}
 
 	query := fmt.Sprintf(`
 	SELECT * FROM Ratings WHERE receiverId = '%s'
