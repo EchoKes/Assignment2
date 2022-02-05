@@ -6,11 +6,11 @@ EduFi is a monolith project split into several microservices, to demonstrate its
 
 For this package, the chosen technology stack consists of:
 
-- [Golang](https://go.dev/) for my backend API server.
-- [MySQL](https://www.mysql.com/) for the database.
+- [Golang](https://go.dev/) for backend API server.
+- [MySQL](https://www.mysql.com/) for database.
 - [React](https://reactjs.org/) framework for frontend.
 - [MUI](https://mui.com/) component library for frontend.
-- [json-server](https://www.npmjs.com/package/json-server) to mock students and tutors data.
+- [json-server](https://www.npmjs.com/package/json-server) for mocking students and tutors data.
 
 ![designstructure](images/designstructure.PNG)
 
