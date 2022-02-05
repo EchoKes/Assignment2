@@ -62,19 +62,19 @@ To deploy, either run docker commands or clone this repository to run docker com
 Clone the repo
 
 ```sh
-   git clone https://github.com/EchoKes/Assignment2.git
+git clone https://github.com/EchoKes/Assignment2.git
 ```
 
 Build and fire the containers in detached mode (docker compose)
 
 ```sh
-   docker-compose up --build -d
+docker-compose up --build -d
 ```
 
 Stop and remove containers (docker compose)
 
 ```sh
-   docker-compose down
+docker-compose down
 ```
 
 ## 4. Manual Setup Instructions
@@ -112,11 +112,11 @@ The use of MySQL database was a choice between comfort and compatibility. In thi
 
 For the frontend, the chosen framework was React as it is component-based. The benefit of doing so is that certain parts of the frontend can reuse these components as some of them are repetitive. This has significantly reduce the amount of code needed to be written. Examples can be found in student's or tutor's ratings/comments with tab implementation. The use of states has made the web application much more enjoyable as users do not need to refresh to view changes made. Also, I wanted to take this chance to learn a new framework.
 
-![dashboard]: ./images/dashboard.PNG
+![dashboard](images/dashboard.PNG)
 
-![studentfeedback]: ./images/studentfeedback.PNG
+![studentfeedback](images/studentfeedback.PNG)
 
-![tutorfeedback]: ./images/tutorfeedback.PNG
+![tutorfeedback](images/tutorfeedback.PNG)
 
 ## Roadmap
 
