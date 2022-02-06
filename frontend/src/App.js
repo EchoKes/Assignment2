@@ -27,9 +27,8 @@ function App() {
   React.useEffect(() => {
     axios
       .get("10.31.11.11:8090/session", {
-        withCredentials: true,
         headers: {
-          Cookie: `connect.sid=${cVal};`,
+          Authorization: `Bearer ${cVal}`,
         },
       })
       .then((res) => {
