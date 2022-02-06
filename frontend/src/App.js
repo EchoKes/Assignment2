@@ -34,19 +34,19 @@ function App() {
       })
       .then((res) => {
         console.log(res);
-    //     let uid = res.data["userID"];
-    //     let uType = res.data["usertype"];
-    //     console.log(uType);
-    //     if (uType === "tutor") {
-    //       setId(uid);
-    //       console.log(
-    //         `user type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
-    //       );
-    //     } else {
-    //       window.alert("Unauthorised! Only tutors allowed.");
-    //       window.history.back();
-    //     }
-    //   });
+        // let uid = res.data["userID"];
+        // let uType = res.data["usertype"];
+        // console.log(uType);
+        // if (uType === "tutor") {
+        //   setId(uid);
+        //   console.log(
+        //     `user type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
+        //   );
+        // } else {
+        //   window.alert("Unauthorised! Only tutors allowed.");
+        //   window.history.back();
+        // }
+      });
     // localStorage.setItem("tutorid", id);
   }, []);
   localStorage.setItem("tutorid", "T01234567A");
