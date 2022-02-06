@@ -32,6 +32,7 @@ function App() {
         },
       })
       .then((res) => {
+        console.log(res);
         let uid = res.data["userID"];
         let uType = res.data["usertype"];
         console.log(uType);
