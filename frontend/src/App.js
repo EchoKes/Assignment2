@@ -26,15 +26,12 @@ function App() {
   const [id, setId] = useState("");
   React.useEffect(() => {
     axios
-      .request({
-        url: "http://10.31.11.11:8090/session",
-        method: "get",
+      .get("10.31.11.11:8090/session", {
         headers: {
-          Cookie: `connect.sid=${cVal}`,
+          Cookie: `connect.sid=${cVal};`,
         },
       })
       .then((res) => {
-        console.log(res);
         let uid = res.data["userID"];
         let uType = res.data["usertype"];
         console.log(uType);
@@ -50,7 +47,7 @@ function App() {
       });
     localStorage.setItem("tutorid", id);
   }, []);
-  // localStorage.setItem("tutorid", "T01234567A");
+  localStorage.setItem("tutorid", "T01234567A");
   return (
     <Router>
       <Navbar>
