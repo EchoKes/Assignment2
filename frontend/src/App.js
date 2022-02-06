@@ -20,20 +20,17 @@ import Cookies from "js-cookie";
 function App() {
   // retrieve id from authentication package 3.1
   // retrieve connect.sid from cookie first then attach to get request
-  let cVal = Cookies.get("connect.sid");
-  console.log(cVal);
-
   const [id, setId] = useState("");
   React.useEffect(() => {
     axios({
       method: "get",
-      url: "http://10.31.11.11:8090/session",
+      url: authURL,
       withCredentials: true,
-      headers: {
-        Cookie: `connect.sid=${cVal}`,
-      },
+      headers: { Cookie: `connect.sid=${Cookies.get("connect.sid")}` },
     }).then((res) => {
       console.log(res);
+      console.log("this is res data: ");
+      console.log(res.data);
       // let uid = res.data["userID"];
       // let uType = res.data["usertype"];
       // console.log(uType);
