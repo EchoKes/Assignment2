@@ -27,26 +27,27 @@ function App() {
   React.useEffect(() => {
     axios
       .get("10.31.11.11:8090/session", {
-        headers: {
-          Authorization: `Bearer ${cVal}`,
-        },
+        withCredentials: true,
+        // headers: {
+        //   Cookie: `connect.sid=${cVal};`,
+        // },
       })
       .then((res) => {
         console.log(res);
-        let uid = res.data["userID"];
-        let uType = res.data["usertype"];
-        console.log(uType);
-        if (uType === "tutor") {
-          setId(uid);
-          console.log(
-            `user type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
-          );
-        } else {
-          window.alert("Unauthorised! Only tutors allowed.");
-          window.history.back();
-        }
-      });
-    localStorage.setItem("tutorid", id);
+    //     let uid = res.data["userID"];
+    //     let uType = res.data["usertype"];
+    //     console.log(uType);
+    //     if (uType === "tutor") {
+    //       setId(uid);
+    //       console.log(
+    //         `user type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
+    //       );
+    //     } else {
+    //       window.alert("Unauthorised! Only tutors allowed.");
+    //       window.history.back();
+    //     }
+    //   });
+    // localStorage.setItem("tutorid", id);
   }, []);
   localStorage.setItem("tutorid", "T01234567A");
   return (
