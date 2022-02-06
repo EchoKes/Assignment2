@@ -15,9 +15,13 @@ import GridViewIcon from "@mui/icons-material/GridView";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import StarIcon from "@mui/icons-material/Star";
 import CommentIcon from "@mui/icons-material/Comment";
+import Cookies from "js-cookie";
 
 function App() {
   // retrieve id from authentication package 3.1
+  // retrieve connect.sid from cookie first then attach to get request
+  let cVal = Cookies.get("connect.sid");
+  console.log(cVal);
   // const [id, setId] = useState("");
   // React.useEffect(() => {
   //   axios.get("10.31.11.11:8090/session").then((res) => {
