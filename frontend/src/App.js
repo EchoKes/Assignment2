@@ -24,7 +24,7 @@ function App() {
   React.useEffect(() => {
     axios({
       method: "get",
-      url: authURL,
+      url: "http://10.31.11.11:8090/session",
       withCredentials: true,
       headers: { Cookie: `connect.sid=${Cookies.get("connect.sid")}` },
     }).then((res) => {
