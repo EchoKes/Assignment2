@@ -30,9 +30,6 @@ function App() {
     }).then((res) => {
       let uid = res.data["userID"];
       setId(uid);
-      console.log(
-        `User type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
-      );
     });
   }, []);
 
