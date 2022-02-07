@@ -15,7 +15,6 @@ import {
   getPerson,
   sortCombinedArray,
 } from "../components/Functions";
-import getUID from "../components/Auth";
 
 const useStyles = makeStyles({
   center: {
@@ -68,8 +67,7 @@ const StudentDetails = () => {
   // get studentid from params
   const { studentid } = useParams();
   // get tutorid from localStorage
-  // const tutorid = localStorage.getItem("tutorid");
-  const tutorid = getUID;
+  const tutorid = localStorage.getItem("tutorid");
 
   // get student details
   const [studentName, setStudentName] = useState("undefined");
@@ -145,7 +143,6 @@ const StudentRating = ({ studentid, tutorid }) => {
 
   const [ratingFromTutor, setRatingFromTutor] = useState(""); // api student's rating from tutor
   const retrieveRatingFromTutor = async () => {
-    console.log(tutorid);
     const rating = await clientRating.get(
       `/student/${studentid}/from/${tutorid}`
     );

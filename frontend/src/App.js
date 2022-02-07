@@ -15,11 +15,29 @@ import GridViewIcon from "@mui/icons-material/GridView";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import StarIcon from "@mui/icons-material/Star";
 import CommentIcon from "@mui/icons-material/Comment";
-import getUID from "./components/Auth";
+import Cookies from "js-cookie";
 
 function App() {
-  // localStorage.setItem("tutorid", "T01234567A");
+  // retrieve id from authentication package 3.1
+  // retrieve connect.sid from cookie first then attach to get request
+  const [id, setId] = useState("");
+  React.useEffect(() => {
+    axios({
+      method: "get",
+      url: "http://10.31.11.11:8090/session",
+      withCredentials: true,
+      headers: { Cookie: `connect.sid=${Cookies.get("connect.sid")}` },
+    }).then((res) => {
+      let uid = res.data["userID"];
+      setId(uid);
+      console.log(
+        `User type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
+      );
+    });
+  }, []);
 
+  localStorage.setItem("tutorid", id);
+  // localStorage.setItem("tutorid", "T01234567A");
   return (
     <Router>
       <Navbar>
@@ -67,7 +85,7 @@ const NavItem = (props) => {
 };
 
 const DropDownMenu = () => {
-  let tutorid = getUID;
+  const tutorid = localStorage.getItem("tutorid");
   const navigate = useNavigate();
   const DropDownItem = (props) => {
     return (
