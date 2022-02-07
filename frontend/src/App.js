@@ -34,7 +34,7 @@ function App() {
       if (uType === "tutor") {
         setId(uid);
         console.log(
-          `user type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
+          `User type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
         );
       } else {
         window.alert("Unauthorised! Only tutors allowed.");
