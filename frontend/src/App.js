@@ -28,25 +28,22 @@ function App() {
       withCredentials: true,
       headers: { Cookie: `connect.sid=${Cookies.get("connect.sid")}` },
     }).then((res) => {
-      console.log(res);
-      console.log("this is res data: ");
-      console.log(res.data);
-      // let uid = res.data["userID"];
-      // let uType = res.data["usertype"];
-      // console.log(uType);
-      // if (uType === "tutor") {
-      //   setId(uid);
-      //   console.log(
-      //     `user type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
-      //   );
-      // } else {
-      //   window.alert("Unauthorised! Only tutors allowed.");
-      //   window.history.back();
-      // }
+      let uid = res.data["userID"];
+      let uType = res.data["usertype"];
+      console.log(uType);
+      if (uType === "tutor") {
+        setId(uid);
+        console.log(
+          `user type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
+        );
+      } else {
+        window.alert("Unauthorised! Only tutors allowed.");
+        window.history.back();
+      }
     });
-    // localStorage.setItem("tutorid", id);
+    localStorage.setItem("tutorid", id);
   }, []);
-  localStorage.setItem("tutorid", "T01234567A");
+  // localStorage.setItem("tutorid", "T01234567A");
   return (
     <Router>
       <Navbar>
