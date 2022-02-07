@@ -145,6 +145,7 @@ const StudentRating = ({ studentid, tutorid }) => {
 
   const [ratingFromTutor, setRatingFromTutor] = useState(""); // api student's rating from tutor
   const retrieveRatingFromTutor = async () => {
+    console.log(tutorid);
     const rating = await clientRating.get(
       `/student/${studentid}/from/${tutorid}`
     );
