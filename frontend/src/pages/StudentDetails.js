@@ -67,8 +67,7 @@ const StudentDetails = () => {
   // get studentid from params
   const { studentid } = useParams();
   // get tutorid from localStorage
-  let tutorid = localStorage.getItem("tutorid");
-  console.log(tutorid);
+  const tutorid = localStorage.getItem("tutorid");
 
   // get student details
   const [studentName, setStudentName] = useState("undefined");
