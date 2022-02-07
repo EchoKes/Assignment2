@@ -15,6 +15,7 @@ import {
   getPerson,
   sortCombinedArray,
 } from "../components/Functions";
+import getUID from "../components/Auth";
 
 const useStyles = makeStyles({
   center: {
@@ -67,7 +68,8 @@ const StudentDetails = () => {
   // get studentid from params
   const { studentid } = useParams();
   // get tutorid from localStorage
-  const tutorid = localStorage.getItem("tutorid");
+  // const tutorid = localStorage.getItem("tutorid");
+  const tutorid = getUID;
 
   // get student details
   const [studentName, setStudentName] = useState("undefined");
