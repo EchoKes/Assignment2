@@ -17,27 +17,28 @@ import StarIcon from "@mui/icons-material/Star";
 import CommentIcon from "@mui/icons-material/Comment";
 import Cookies from "js-cookie";
 
+const getUID = async () => {
+  const res = await axios({
+    method: "get",
+    url: "http://10.31.11.11:8090/session",
+    withCredentials: true,
+    headers: { Cookie: `connect.sid=${Cookies.get("connect.sid")}` },
+  });
+  let uid = res.data["userID"];
+  let uType = res.data["usertype"];
+  console.log(
+    `User type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
+  );
+  return uid;
+};
+
+localStorage.setItem("tutorid", getUID);
+
 function App() {
   // retrieve id from authentication package 3.1
   // retrieve connect.sid from cookie first then attach to get request
-  // const getUID = async () => {
-  //   const res = await axios({
-  //     method: "get",
-  //     url: "http://10.31.11.11:8090/session",
-  //     withCredentials: true,
-  //     headers: { Cookie: `connect.sid=${Cookies.get("connect.sid")}` },
-  //   });
-  //   let uid = res.data["userID"];
-  //   let uType = res.data["usertype"];
-  //   console.log(
-  //     `User type of ${uType} with id of ${uid} attempting to enter tutor's dashboard..`
-  //   );
-  //   return uid;
-  // };
 
-  // localStorage.setItem("tutorid", getUID);
-
-  localStorage.setItem("tutorid", "T01234567A");
+  // localStorage.setItem("tutorid", "T01234567A");
   return (
     <Router>
       <Navbar>
